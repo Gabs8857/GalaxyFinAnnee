@@ -4,17 +4,35 @@
     box-sizing: border-box;
 }
 
+:root {
+    --color-bg: #000;
+    --color-white: #fff;
+    --color-cyan: #00ffff;
+    --color-purple-900: #1a0033;
+    --color-purple-800: #2d0052;
+    --color-purple-700: #4a0080;
+    --color-purple-600: #6a00a0;
+    --color-pink-300: #ff99ff;
+    --color-text-muted: #ddd;
+    --color-text-muted-strong: #888;
+    --panel-bg: rgba(0, 0, 0, 0.8);
+    --scrollbar-track: rgba(255, 153, 255, 0.1);
+    --transition-fast: 0.3s;
+    --transition-medium: 0.4s;
+}
+
 body {
     font-family: 'Arial', sans-serif;
-    background: #000;
+    background: var(--color-bg);
     overflow: hidden;
-    color: #fff;
+    color: var(--color-white);
 }
 
 canvas {
     display: block;
     width: 100%;
     height: 100vh;
+    touch-action: none;
 }
 
 .controls {
@@ -22,10 +40,11 @@ canvas {
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    color: #fff;
+    color: var(--color-white);
     text-align: center;
     font-size: 12px;
     z-index: 10;
+    max-width: 90vw;
 }
 
 .planet-info {
@@ -33,8 +52,8 @@ canvas {
     bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: #fff;
+    background: var(--panel-bg);
+    color: var(--color-white);
     padding: 15px 20px;
     border-radius: 10px;
     max-width: 400px;
@@ -42,8 +61,8 @@ canvas {
     z-index: 100;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s;
-    border: 2px solid #00ffff;
+    transition: opacity var(--transition-fast);
+    border: 2px solid var(--color-cyan);
 }
 
 .planet-info.active {
@@ -53,7 +72,7 @@ canvas {
 .planet-info h3 {
     margin: 0 0 8px 0;
     font-size: 16px;
-    color: #00ffff;
+    color: var(--color-cyan);
 }
 
 .planet-info p {
@@ -68,12 +87,12 @@ canvas {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #1a0033 0%, #2d0052 100%);
+    background: linear-gradient(135deg, var(--color-purple-900) 0%, var(--color-purple-800) 100%);
     display: flex;
     z-index: 1000;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.4s ease;
+    transition: opacity var(--transition-medium) ease;
 }
 
 .detail-page.active {
@@ -91,21 +110,21 @@ canvas {
 .back-btn {
     width: 45px;
     height: 45px;
-    background: #4a0080;
-    border: 2px solid #ff99ff;
-    color: #ff99ff;
+    background: var(--color-purple-700);
+    border: 2px solid var(--color-pink-300);
+    color: var(--color-pink-300);
     border-radius: 50%;
     cursor: pointer;
     font-size: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s;
+    transition: all var(--transition-fast);
     font-weight: bold;
 }
 
 .back-btn:hover {
-    box-shadow: 0 0 15px #ff99ff;
+    box-shadow: 0 0 15px var(--color-pink-300);
     transform: scale(1.1);
 }
 
@@ -127,7 +146,7 @@ canvas {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    color: #fff;
+    color: var(--color-white);
     overflow-y: auto;
 }
 
@@ -149,28 +168,31 @@ canvas {
     padding: 80px 50px 50px 50px;
     display: flex;
     flex-direction: column;
-    color: #fff;
+    color: var(--color-white);
     overflow-y: auto;
 }
 
-.detail-sidebar::-webkit-scrollbar {
+.detail-sidebar::-webkit-scrollbar,
+.detail-content::-webkit-scrollbar {
     width: 8px;
 }
 
-.detail-sidebar::-webkit-scrollbar-track {
-    background: rgba(255, 153, 255, 0.1);
+.detail-sidebar::-webkit-scrollbar-track,
+.detail-content::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
 }
 
-.detail-sidebar::-webkit-scrollbar-thumb {
-    background: #ff99ff;
+.detail-sidebar::-webkit-scrollbar-thumb,
+.detail-content::-webkit-scrollbar-thumb {
+    background: var(--color-pink-300);
     border-radius: 10px;
 }
 
 .detail-sidebar h2 {
     font-size: 36px;
     margin: 0 0 30px 0;
-    color: #ff99ff;
-    border-bottom: 2px solid #ff99ff;
+    color: var(--color-pink-300);
+    border-bottom: 2px solid var(--color-pink-300);
     padding-bottom: 15px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -183,7 +205,7 @@ canvas {
 #detail-description {
     font-size: 14px;
     line-height: 1.8;
-    color: #ddd;
+    color: var(--color-text-muted);
     margin: 0;
     animation: fadeIn 0.3s ease;
 }
@@ -199,24 +221,11 @@ canvas {
     }
 }
 
-.detail-content::-webkit-scrollbar {
-    width: 8px;
-}
-
-.detail-content::-webkit-scrollbar-track {
-    background: rgba(255, 153, 255, 0.1);
-}
-
-.detail-content::-webkit-scrollbar-thumb {
-    background: #ff99ff;
-    border-radius: 10px;
-}
-
 .detail-content h2 {
     font-size: 42px;
     margin: 0 0 30px 0;
-    color: #ff99ff;
-    border-bottom: 2px solid #ff99ff;
+    color: var(--color-pink-300);
+    border-bottom: 2px solid var(--color-pink-300);
     padding-bottom: 15px;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -225,26 +234,25 @@ canvas {
 .detail-content p {
     font-size: 14px;
     line-height: 1.9;
-    color: #ddd;
+    color: var(--color-text-muted);
     margin: 0 0 30px 0;
 }
 
 .continents {
     margin-top: 30px;
-    display: flex;
+    display: none;
     flex-wrap: wrap;
     gap: 12px;
-    display: none;
 }
 
 .continent-btn {
-    background: #4a0080;
-    color: #ff99ff;
-    border: 2px solid #ff99ff;
+    background: var(--color-purple-700);
+    color: var(--color-pink-300);
+    border: 2px solid var(--color-pink-300);
     padding: 12px 18px;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all var(--transition-fast);
     font-size: 13px;
     font-weight: bold;
     text-transform: uppercase;
@@ -253,28 +261,28 @@ canvas {
 }
 
 .continent-btn:hover {
-    background: #6a00a0;
-    box-shadow: 0 0 20px #ff99ff;
+    background: var(--color-purple-600);
+    box-shadow: 0 0 20px var(--color-pink-300);
     transform: translateY(-2px);
 }
 
 .continent-btn.active {
-    background: #ff99ff;
-    color: #1a0033;
-    box-shadow: 0 0 25px #ff99ff;
+    background: var(--color-pink-300);
+    color: var(--color-purple-900);
+    box-shadow: 0 0 25px var(--color-pink-300);
 }
 
 .continent-info {
     margin-top: 25px;
     padding: 20px;
-    background: rgba(255, 153, 255, 0.1);
-    border-left: 4px solid #ff99ff;
+    background: var(--scrollbar-track);
+    border-left: 4px solid var(--color-pink-300);
     border-radius: 4px;
     animation: slideIn 0.3s ease;
 }
 
 .continent-info h4 {
-    color: #ff99ff;
+    color: var(--color-pink-300);
     margin: 0 0 10px 0;
     font-size: 16px;
     text-transform: uppercase;
@@ -283,7 +291,7 @@ canvas {
 .continent-info p {
     margin: 0;
     font-size: 13px;
-    color: #ccc;
+    color: var(--color-text-muted);
 }
 
 @keyframes slideIn {
@@ -315,5 +323,86 @@ canvas {
 
     .detail-content h2 {
         font-size: 28px;
+    }
+}
+
+@media (max-width: 768px) {
+    canvas {
+        height: 100svh;
+    }
+
+    .controls {
+        bottom: 12px;
+        font-size: 11px;
+        padding: 0 10px;
+    }
+
+    .planet-info {
+        bottom: 60px;
+        max-width: 90vw;
+        padding: 12px 16px;
+    }
+
+    .planet-info h3 {
+        font-size: 14px;
+    }
+
+    .planet-info p {
+        font-size: 11px;
+    }
+
+    .detail-header {
+        top: 16px;
+        left: 16px;
+    }
+
+    .back-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+
+    .detail-main {
+        flex-direction: column;
+    }
+
+    .detail-canvas-container {
+        min-width: 100%;
+        height: 45%;
+    }
+
+    .detail-sidebar {
+        min-width: 100%;
+        height: 55%;
+        padding: 60px 24px 30px;
+    }
+
+    .detail-sidebar h2 {
+        font-size: 26px;
+        margin-bottom: 20px;
+    }
+
+    #detail-description {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+}
+
+@media (max-width: 480px) {
+    .controls {
+        font-size: 10px;
+    }
+
+    .planet-info {
+        bottom: 50px;
+        border-width: 1px;
+    }
+
+    .detail-sidebar {
+        padding: 54px 18px 24px;
+    }
+
+    .detail-sidebar h2 {
+        font-size: 22px;
     }
 }

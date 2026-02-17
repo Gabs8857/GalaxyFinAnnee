@@ -10,6 +10,17 @@ document.body.appendChild(renderer.domElement);
 
 camera.position.z = 200;
 
+const controlsText = document.querySelector('.controls p');
+
+function updateControlsText() {
+    if (!controlsText) return;
+    if (window.innerWidth <= 768) {
+        controlsText.textContent = 'Glisser: Rotation | Pincer: Zoom | Tap: Details';
+    } else {
+        controlsText.textContent = 'Clic gauche + mouvement: Rotation | Molette: Zoom | Clic: Détails';
+    }
+}
+
 // Planètes et leurs infos avec orbites
 const planets = [
     { 
@@ -130,12 +141,12 @@ const planets = [
 ];
 
 const planetsObjects = [];
-const planetAngles = [];
 let hoveredPlanet = null;
 
 // Tableau pour raycast
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
+let suppressNextClick = false;
 
 // Ajouter les lumières
 const ambientLight = new THREE.AmbientLight(0x6600ff, 0.3);
@@ -155,6 +166,10 @@ const sunMaterial = new THREE.MeshBasicMaterial({
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
 sun.position.set(0, 0, 0);
 scene.add(sun);
+
+function openCv() {
+    window.open('CV.pdf', '_blank', 'noopener');
+}
 
 // Ajouter un glow au soleil
 const glowGeometry = new THREE.IcosahedronGeometry(27, 4);
@@ -212,7 +227,8 @@ planets.forEach((planet, index) => {
     });
 
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(planet.distance, Math.sin(index) * 10, 0);
+    const planetYOffset = Math.sin(index) * 10;
+    mesh.position.set(planet.distance, planetYOffset, 0);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     
@@ -223,12 +239,12 @@ planets.forEach((planet, index) => {
         isHovered: false,
         distance: planet.distance,
         angle: Math.random() * Math.PI * 2,
-        orbitSpeed: planet.speed
+        orbitSpeed: planet.speed,
+        orbitYOffset: planetYOffset
     };
 
     scene.add(mesh);
     planetsObjects.push(mesh);
-    planetAngles.push(mesh.userData.angle);
 
     // Ajouter des orbites visuelles
     const orbitGeometry = new THREE.BufferGeometry();
@@ -237,7 +253,7 @@ planets.forEach((planet, index) => {
         const angle = (i / 128) * Math.PI * 2;
         orbitPoints.push(
             Math.cos(angle) * planet.distance,
-            0,
+            planetYOffset,
             Math.sin(angle) * planet.distance
         );
     }
@@ -256,13 +272,17 @@ const infoPanel = document.createElement('div');
 infoPanel.className = 'planet-info';
 document.body.appendChild(infoPanel);
 
-// Gestion du hover
-window.addEventListener('mousemove', (event) => {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+function getPlanetIntersection(clientX, clientY) {
+    mouse.x = (clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(clientY / window.innerHeight) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(planetsObjects);
+    return intersects.length > 0 ? intersects[0].object : null;
+}
+
+function updateHoverFromPointer(clientX, clientY) {
+    const planet = getPlanetIntersection(clientX, clientY);
 
     // Réinitialiser hover
     planetsObjects.forEach(mesh => {
@@ -273,27 +293,40 @@ window.addEventListener('mousemove', (event) => {
     });
     infoPanel.classList.remove('active');
 
-    // Appliquer hover si intersection
-    if (intersects.length > 0) {
-        const planet = intersects[0].object;
+    if (planet) {
         planet.userData.isHovered = true;
         hoveredPlanet = planet;
-        
-        // Afficher les infos
+
         infoPanel.innerHTML = `
             <h3>${planet.userData.planet.name}</h3>
             <p>${planet.userData.planet.skills}</p>
         `;
         infoPanel.classList.add('active');
     }
+}
+
+// Gestion du hover
+window.addEventListener('mousemove', (event) => {
+    updateHoverFromPointer(event.clientX, event.clientY);
 });
 
 // Gestion du clic pour afficher la vue détail
 window.addEventListener('click', (event) => {
+    if (suppressNextClick) {
+        suppressNextClick = false;
+        return;
+    }
+
     // Vérifier que la detail-view n'est pas visible
     const detailView = document.getElementById('detail-view');
     if (detailView && detailView.classList.contains('active')) {
         return; // Ne pas traiter les clics si la modal est ouverte
+    }
+
+    const sunHit = getPlanetIntersection(event.clientX, event.clientY);
+    if (sunHit === sun) {
+        openCv();
+        return;
     }
     
     if (!isDragging && hoveredPlanet) {
@@ -332,11 +365,113 @@ window.addEventListener('wheel', (e) => {
     camera.position.z = Math.max(80, Math.min(600, camera.position.z));
 }, { passive: false });
 
+// Interactions tactiles (drag + pinch + tap)
+const touchState = {
+    isDragging: false,
+    hasMoved: false,
+    lastX: 0,
+    lastY: 0,
+    isPinching: false,
+    lastDistance: 0
+};
+
+function getTouchDistance(touchA, touchB) {
+    const dx = touchA.clientX - touchB.clientX;
+    const dy = touchA.clientY - touchB.clientY;
+    return Math.hypot(dx, dy);
+}
+
+window.addEventListener('touchstart', (event) => {
+    const detailView = document.getElementById('detail-view');
+    if (detailView && detailView.classList.contains('active')) {
+        return;
+    }
+
+    if (event.touches.length === 1) {
+        const touch = event.touches[0];
+        touchState.isDragging = true;
+        touchState.hasMoved = false;
+        touchState.isPinching = false;
+        touchState.lastX = touch.clientX;
+        touchState.lastY = touch.clientY;
+        updateHoverFromPointer(touch.clientX, touch.clientY);
+    } else if (event.touches.length === 2) {
+        touchState.isPinching = true;
+        touchState.isDragging = false;
+        touchState.lastDistance = getTouchDistance(event.touches[0], event.touches[1]);
+    }
+
+    event.preventDefault();
+}, { passive: false });
+
+window.addEventListener('touchmove', (event) => {
+    const detailView = document.getElementById('detail-view');
+    if (detailView && detailView.classList.contains('active')) {
+        return;
+    }
+
+    if (touchState.isPinching && event.touches.length === 2) {
+        const distance = getTouchDistance(event.touches[0], event.touches[1]);
+        const delta = distance - touchState.lastDistance;
+        camera.position.z -= delta * 0.2;
+        camera.position.z = Math.max(80, Math.min(600, camera.position.z));
+        touchState.lastDistance = distance;
+        touchState.hasMoved = true;
+        event.preventDefault();
+        return;
+    }
+
+    if (touchState.isDragging && event.touches.length === 1) {
+        const touch = event.touches[0];
+        const deltaX = touch.clientX - touchState.lastX;
+        const deltaY = touch.clientY - touchState.lastY;
+
+        scene.rotation.y += deltaX * 0.005;
+        scene.rotation.x += deltaY * 0.005;
+
+        touchState.lastX = touch.clientX;
+        touchState.lastY = touch.clientY;
+        touchState.hasMoved = true;
+        updateHoverFromPointer(touch.clientX, touch.clientY);
+        event.preventDefault();
+    }
+}, { passive: false });
+
+window.addEventListener('touchend', (event) => {
+    const detailView = document.getElementById('detail-view');
+    if (detailView && detailView.classList.contains('active')) {
+        touchState.isDragging = false;
+        touchState.isPinching = false;
+        return;
+    }
+
+    if (!touchState.isPinching && !touchState.hasMoved && event.changedTouches.length > 0) {
+        const touch = event.changedTouches[0];
+        const planet = getPlanetIntersection(touch.clientX, touch.clientY);
+        if (planet === sun) {
+            suppressNextClick = true;
+            openCv();
+        } else if (planet) {
+            suppressNextClick = true;
+            showDetailView(planet);
+        }
+    }
+
+    touchState.isDragging = false;
+    touchState.isPinching = false;
+}, { passive: false });
+
+window.addEventListener('touchcancel', () => {
+    touchState.isDragging = false;
+    touchState.isPinching = false;
+});
+
 // Gestion du redimensionnement
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    updateControlsText();
 });
 
 // Animation du hover
@@ -364,13 +499,14 @@ function rotateBelts() {
 
 // Mouvement orbital des planètes
 function updateOrbits() {
-    planetsObjects.forEach((mesh, index) => {
+    planetsObjects.forEach((mesh) => {
         mesh.userData.angle += mesh.userData.orbitSpeed;
         
         const x = Math.cos(mesh.userData.angle) * mesh.userData.distance;
         const z = Math.sin(mesh.userData.angle) * mesh.userData.distance;
         
         mesh.position.x = x;
+        mesh.position.y = mesh.userData.orbitYOffset;
         mesh.position.z = z;
         
         // Rotation propre de la planète
@@ -383,7 +519,6 @@ function updateOrbits() {
 let detailScene = null;
 let detailCamera = null;
 let detailRenderer = null;
-let detailAnimationId = null;
 let detailRaycaster = new THREE.Raycaster();
 let detailMouse = new THREE.Vector2();
 let detailContinentMeshes = [];
@@ -439,11 +574,15 @@ function initDetailView() {
     detailRenderer.domElement.addEventListener('mousedown', onDetailCanvasMouseDown);
     detailRenderer.domElement.addEventListener('mouseup', onDetailCanvasMouseUp);
     detailRenderer.domElement.addEventListener('mouseleave', onDetailCanvasMouseUp);
+    detailRenderer.domElement.addEventListener('touchstart', onDetailCanvasTouchStart, { passive: false });
+    detailRenderer.domElement.addEventListener('touchmove', onDetailCanvasTouchMove, { passive: false });
+    detailRenderer.domElement.addEventListener('touchend', onDetailCanvasTouchEnd, { passive: false });
+    detailRenderer.domElement.addEventListener('touchcancel', onDetailCanvasTouchEnd, { passive: false });
 }
 
 function animateDetail() {
     if (!isDetailAnimating) return;
-    detailAnimationId = requestAnimationFrame(animateDetail);
+    requestAnimationFrame(animateDetail);
 
     if (!detailRenderer || !detailScene || !detailCamera) {
         return;
@@ -461,13 +600,6 @@ function startDetailAnimation() {
     animateDetail();
 }
 
-function stopDetailAnimation() {
-    if (detailAnimationId) {
-        cancelAnimationFrame(detailAnimationId);
-    }
-    detailAnimationId = null;
-    isDetailAnimating = false;
-}
 
 function createContinentSegments(planet) {
     // Nettoyer les anciens meshes
@@ -578,21 +710,69 @@ function createContinentSegments(planet) {
     });
 }
 
-function onDetailCanvasClick(event) {
-    // Récupérer le canvas
+function getDetailIntersection(clientX, clientY) {
     const rect = detailRenderer.domElement.getBoundingClientRect();
-    detailMouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    detailMouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-    // Raycast
+    detailMouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    detailMouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
     detailRaycaster.setFromCamera(detailMouse, detailCamera);
     const intersects = detailRaycaster.intersectObjects(detailContinentMeshes);
+    return intersects.length > 0 ? intersects[0].object : null;
+}
 
-    // Chercher un continent à afficher
-    for (let i = 0; i < intersects.length; i++) {
-        if (intersects[i].object.userData.isContinent && intersects[i].object.userData.continent) {
-            showContinentInfo(intersects[i].object.userData.continent);
-            break;
+function onDetailCanvasClick(event) {
+    const hit = getDetailIntersection(event.clientX, event.clientY);
+    if (hit && hit.userData.isContinent && hit.userData.continent) {
+        showContinentInfo(hit.userData.continent);
+    }
+}
+
+const detailTouchState = {
+    isDragging: false,
+    hasMoved: false,
+    lastX: 0,
+    lastY: 0
+};
+
+function onDetailCanvasTouchStart(event) {
+    if (event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    detailTouchState.isDragging = true;
+    detailTouchState.hasMoved = false;
+    detailTouchState.lastX = touch.clientX;
+    detailTouchState.lastY = touch.clientY;
+    detailRenderer.domElement.style.cursor = 'grabbing';
+    event.preventDefault();
+}
+
+function onDetailCanvasTouchMove(event) {
+    if (!detailTouchState.isDragging || event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    const deltaX = touch.clientX - detailTouchState.lastX;
+    const deltaY = touch.clientY - detailTouchState.lastY;
+
+    detailTouchState.lastX = touch.clientX;
+    detailTouchState.lastY = touch.clientY;
+    detailTouchState.hasMoved = true;
+
+    detailContinentMeshes.forEach(mesh => {
+        if (mesh.userData && (mesh.userData.isContinent || !mesh.userData.isContinent)) {
+            mesh.rotation.y += deltaX * 0.005;
+            mesh.rotation.x += deltaY * 0.005;
+        }
+    });
+
+    event.preventDefault();
+}
+
+function onDetailCanvasTouchEnd(event) {
+    detailTouchState.isDragging = false;
+    detailRenderer.domElement.style.cursor = 'grab';
+
+    if (!detailTouchState.hasMoved && event.changedTouches.length > 0) {
+        const touch = event.changedTouches[0];
+        const hit = getDetailIntersection(touch.clientX, touch.clientY);
+        if (hit && hit.userData.isContinent && hit.userData.continent) {
+            showContinentInfo(hit.userData.continent);
         }
     }
 }
@@ -709,11 +889,6 @@ function hideDetailView() {
     currentDetailPlanet = null;
     hoveredPlanet = null;
     
-    // Réinitialiser le panel info
-    const infoPanel = document.getElementById('info-panel');
-    if (infoPanel) {
-        infoPanel.classList.remove('active');
-    }
 }
 
 // Initialiser la vue détail quand le DOM est prêt
@@ -735,3 +910,5 @@ function animate() {
 }
 
 animate();
+
+updateControlsText();
