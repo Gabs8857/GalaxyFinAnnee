@@ -390,6 +390,7 @@ let detailContinentMeshes = [];
 let currentDetailPlanet = null;
 let isDraggingDetail = false;
 let previousDetailMousePosition = { x: 0, y: 0 };
+let isDetailAnimating = false;
 
 const continentColors = [
     0xFF6B9D, // Rose vif
@@ -430,18 +431,7 @@ function initDetailView() {
     const backLight = new THREE.PointLight(0xaa66ff, 1);
     backLight.position.set(-50, -50, 30);
     detailScene.add(backLight);
-
-    // Animation de la vue détail
-    function animateDetail() {
-        detailAnimationId = requestAnimationFrame(animateDetail);
-
-        // Rotation lente de la scène
-        detailScene.rotation.y += 0.0003;
-
-        detailRenderer.render(detailScene, detailCamera);
-    }
-
-    animateDetail();
+    startDetailAnimation();
     
     // Événements pour interagir avec la planète
     detailRenderer.domElement.addEventListener('click', onDetailCanvasClick);
@@ -449,6 +439,34 @@ function initDetailView() {
     detailRenderer.domElement.addEventListener('mousedown', onDetailCanvasMouseDown);
     detailRenderer.domElement.addEventListener('mouseup', onDetailCanvasMouseUp);
     detailRenderer.domElement.addEventListener('mouseleave', onDetailCanvasMouseUp);
+}
+
+function animateDetail() {
+    if (!isDetailAnimating) return;
+    detailAnimationId = requestAnimationFrame(animateDetail);
+
+    if (!detailRenderer || !detailScene || !detailCamera) {
+        return;
+    }
+
+    // Rotation lente de la scène
+    detailScene.rotation.y += 0.0003;
+
+    detailRenderer.render(detailScene, detailCamera);
+}
+
+function startDetailAnimation() {
+    if (isDetailAnimating) return;
+    isDetailAnimating = true;
+    animateDetail();
+}
+
+function stopDetailAnimation() {
+    if (detailAnimationId) {
+        cancelAnimationFrame(detailAnimationId);
+    }
+    detailAnimationId = null;
+    isDetailAnimating = false;
 }
 
 function createContinentSegments(planet) {
@@ -462,6 +480,53 @@ function createContinentSegments(planet) {
 
     const continents = planet.continents;
     const radius = 35;
+
+    const getFibonacciSphereDirection = (index, total) => {
+        const i = index + 0.5;
+        const phi = Math.acos(1 - (2 * i) / total);
+        const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+        return new THREE.Vector3(
+            Math.cos(theta) * Math.sin(phi),
+            Math.sin(theta) * Math.sin(phi),
+            Math.cos(phi)
+        ).normalize();
+    };
+
+    const buildContinentPatchGeometry = (sourceGeometry, centerDir, angularRadius) => {
+        const threshold = Math.cos(angularRadius);
+        const positions = sourceGeometry.attributes.position.array;
+        const patchPositions = [];
+
+        const v1 = new THREE.Vector3();
+        const v2 = new THREE.Vector3();
+        const v3 = new THREE.Vector3();
+        const centroid = new THREE.Vector3();
+
+        for (let i = 0; i < positions.length; i += 9) {
+            v1.set(positions[i], positions[i + 1], positions[i + 2]);
+            v2.set(positions[i + 3], positions[i + 4], positions[i + 5]);
+            v3.set(positions[i + 6], positions[i + 7], positions[i + 8]);
+
+            centroid.copy(v1).add(v2).add(v3).multiplyScalar(1 / 3).normalize();
+
+            if (centroid.dot(centerDir) >= threshold) {
+                patchPositions.push(
+                    v1.x, v1.y, v1.z,
+                    v2.x, v2.y, v2.z,
+                    v3.x, v3.y, v3.z
+                );
+            }
+        }
+
+        if (patchPositions.length === 0) {
+            return null;
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(patchPositions, 3));
+        geometry.computeVertexNormals();
+        return geometry;
+    };
 
     // Créer la planète de base
     const baseGeometry = new THREE.IcosahedronGeometry(radius, 4);
@@ -477,37 +542,35 @@ function createContinentSegments(planet) {
     detailContinentMeshes.push(baseMesh);
 
     // Créer et afficher tous les continents à la fois autour de la planète
+    const sourceGeometry = new THREE.SphereGeometry(radius + 0.6, 36, 24).toNonIndexed();
+    const baseAngularRadius = Math.max(0.35, 0.65 - (continents.length * 0.03));
+
     continents.forEach((continent, index) => {
         const color = continentColors[index % continentColors.length];
-        
-        // Créer une petite sphère pour chaque continent
-        const geometry = new THREE.SphereGeometry(6, 8, 8);
+
+        const centerDir = getFibonacciSphereDirection(index, continents.length);
+        const angularRadius = baseAngularRadius + (index % 2 === 0 ? 0.04 : -0.02);
+        const geometry = buildContinentPatchGeometry(sourceGeometry, centerDir, angularRadius);
+        if (!geometry) {
+            return;
+        }
+
         const material = new THREE.MeshPhongMaterial({
             color: color,
             emissive: color,
             emissiveIntensity: 0.4,
             shininess: 100,
             transparent: true,
-            opacity: 0.8
+            opacity: 0.9
         });
 
         const mesh = new THREE.Mesh(geometry, material);
-        
-        // Positionner autour de la planète de manière regulière
-        const angle = (index / continents.length) * Math.PI * 2;
-        const angleX = (index / continents.length) * Math.PI;
-        
-        const x = Math.cos(angle) * (radius + 15);
-        const y = Math.sin(angleX) * 20;
-        const z = Math.sin(angle) * (radius + 15);
-        
-        mesh.position.set(x, y, z);
         
         mesh.userData = {
             isContinent: true,
             continent: continent,
             continentIndex: index,
-            originalOpacity: 0.8
+            originalOpacity: 0.9
         };
 
         detailScene.add(mesh);
@@ -603,6 +666,7 @@ function showDetailView(planetMesh) {
 
     // Créer les segments
     createContinentSegments(planet);
+    startDetailAnimation();
 
     // Afficher la vue
     const detailView = document.getElementById('detail-view');
@@ -649,10 +713,6 @@ function hideDetailView() {
     const infoPanel = document.getElementById('info-panel');
     if (infoPanel) {
         infoPanel.classList.remove('active');
-    }
-    
-    if (detailAnimationId) {
-        cancelAnimationFrame(detailAnimationId);
     }
 }
 
