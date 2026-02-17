@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Dev - Portfolio</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="detail-page">
+        <div class="detail-header">
+            <button class="back-btn" onclick="goBack()">←</button>
+        </div>
+
+        <div class="detail-container">
+            <div class="detail-3d" id="canvas-3d"></div>
+            <div class="detail-content">
+                <h2 id="planet-name">Titre</h2>
+                <p id="planet-description">Description</p>
+                
+                <div class="continents" id="continent-list"></div>
+                
+                <div id="continent-info" class="continent-info" style="display: none;">
+                    <h4 id="continent-name">Nom</h4>
+                    <p id="continent-detail">Détail</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="../js/planet-detail.js"></script>
+</body>
+</html>
