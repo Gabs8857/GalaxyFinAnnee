@@ -406,3 +406,21 @@ canvas {
         font-size: 22px;
     }
 }
+div.animation-pause-btn {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    background: var(--color-purple-700);
+    border: 2px solid var(--color-pink-300);
+    color: var(--color-pink-300);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    font-weight: bold;
+    z-index: 1001;}

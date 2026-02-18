@@ -498,6 +498,7 @@ function rotateBelts() {
 }
 
 // Mouvement orbital des planètes
+
 function updateOrbits() {
     planetsObjects.forEach((mesh) => {
         mesh.userData.angle += mesh.userData.orbitSpeed;
@@ -514,7 +515,13 @@ function updateOrbits() {
         mesh.rotation.y += 0.004;
     });
 }
-
+// Bouton de mise en pause de l'animation
+const animationPauseBtn = document.getElementById('animation-pause-btn');
+let isAnimationPaused = false;
+animationPauseBtn.addEventListener('click', () => {
+    isAnimationPaused = !isAnimationPaused;
+    animationPauseBtn.textContent = isAnimationPaused ? '▶️' : '⏸️';
+});
 // === VUE DÉTAIL ===
 let detailScene = null;
 let detailCamera = null;
