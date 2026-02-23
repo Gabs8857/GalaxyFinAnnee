@@ -11,6 +11,8 @@ Le projet met en scène des domaines de compétences sous forme de planètes en 
 - **Orbites elliptiques dynamiques** avec variation de vitesse (loi de Kepler)
 - **Ceintures d'astéroïdes** avec rotation circulaire fluide
 - **Vue détail immersive** avec planète 3D interactive et rotation automatique
+  - **Répartition 70/30** : planète occupe 70% de l'espace, texte 30%
+  - **Zoom adaptatif automatique** selon la taille du conteneur
 - **Légende interactive** des continents avec indicateurs colorés
 - **Système de focus** sur les continents (orientation automatique par quaternions)
 - **Aperçu des continents** visible directement en vue galaxie
@@ -73,6 +75,7 @@ python -m http.server 8000
 - Clic sur un continent : focus et orientation de la planète
 - Clic sur la planète : affichage des informations générales
 - Rotation automatique de la planète
+- Zoom adaptatif selon la taille d'écran
 
 ## Domaines représentés
 
@@ -132,6 +135,11 @@ galaxy-test/
 - Orbites elliptiques avec calcul de vitesse proportionnel à la distance
 - Rotation des planètes uniforme via THREE.Group
 - Focus sur continents avec interpolation quaternion (slerp)
+- **Zoom adaptatif dynamique** : fonction `calculateAdaptiveZoom()` ajuste la distance caméra
+  - Basé sur les dimensions du conteneur (référence 600px)
+  - Plage de zoom entre 40 et 70 pour vue optimale
+  - Recalcul automatique lors du redimensionnement de fenêtre
+- **Layout responsive** : répartition 70% planète / 30% texte en vue détail
 - Cache-busting via paramètre de version CSS (?v=2.0)
 - Le soleil est cliquable et ouvre CV.pdf
 

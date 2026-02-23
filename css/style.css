@@ -185,13 +185,13 @@ canvas {
 }
 
 .detail-canvas-container {
-    flex: 1;
+    flex: 0 0 70%;
     position: relative;
-    min-width: 50%;
+    min-width: 60%;
 }
 
 .detail-sidebar {
-    flex: 1;
+    flex: 0 0 30%;
     padding: 80px 50px 50px 50px;
     display: flex;
     flex-direction: column;

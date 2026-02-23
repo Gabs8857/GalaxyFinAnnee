@@ -434,6 +434,22 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
     updateControlsText();
+    
+    // Adapter le zoom de la vue détail si elle est active
+    const detailCanvas = document.getElementById('detail-canvas');
+    if (detailCanvas && detailRenderer && detailCamera) {
+        const width = detailCanvas.clientWidth;
+        const height = detailCanvas.clientHeight;
+        if (width > 0 && height > 0) {
+            detailCamera.aspect = width / height;
+            detailCamera.updateProjectionMatrix();
+            detailRenderer.setSize(width, height);
+            
+            // Recalculer le zoom adaptatif
+            detailDefaultCameraZ = calculateAdaptiveZoom();
+            detailTargetCameraZ = detailDefaultCameraZ;
+        }
+    }
 });
 
 // Animation du hover
@@ -515,12 +531,30 @@ let currentDetailPlanet = null;
 let isDraggingDetail = false;
 let previousDetailMousePosition = { x: 0, y: 0 };
 let isDetailAnimating = false;
-let detailTargetCameraZ = 60;
-const detailDefaultCameraZ = 60;
+let detailTargetCameraZ = 50;
+let detailDefaultCameraZ = 50;
 const detailFocusedCameraZ = 42;
 let detailHasTargetQuaternion = false;
 const detailTargetQuaternion = new THREE.Quaternion();
 const detailContinentDirections = new Map();
+
+function calculateAdaptiveZoom() {
+    const detailCanvas = document.getElementById('detail-canvas');
+    if (!detailCanvas) return 50;
+    
+    const height = detailCanvas.clientHeight;
+    const width = detailCanvas.clientWidth;
+    const minDimension = Math.min(height, width);
+    
+    // Calculer le zoom basé sur la taille du conteneur
+    // Plus le conteneur est petit, plus on zoom (position z plus petite)
+    // Plus le conteneur est grand, plus on dézoom (position z plus grande)
+    const baseZoom = 50;
+    const zoomFactor = minDimension / 600; // 600px comme référence
+    const adaptiveZoom = baseZoom * Math.max(0.8, Math.min(zoomFactor, 1.2));
+    
+    return Math.max(40, Math.min(adaptiveZoom, 70));
+}
 
 function clearDetailFocus() {
     detailTargetCameraZ = detailDefaultCameraZ;
@@ -599,7 +633,10 @@ function initDetailView() {
     detailRenderer.setClearColor(0x1a0033, 0.3);
     detailCanvas.appendChild(detailRenderer.domElement);
     
-    detailCamera.position.z = 60;
+    // Zoom adaptatif
+    detailDefaultCameraZ = calculateAdaptiveZoom();
+    detailCamera.position.z = detailDefaultCameraZ;
+    detailTargetCameraZ = detailDefaultCameraZ;
 
     // Lumière
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
@@ -899,7 +936,7 @@ function showDetailView(planetMesh) {
         detailView.classList.add('active');
     }, 10);
 
-    // Redimensionner le renderer
+    // Redimensionner le renderer et recalculer le zoom
     setTimeout(() => {
         const detailCanvas = document.getElementById('detail-canvas');
         const width = detailCanvas.clientWidth;
@@ -908,6 +945,11 @@ function showDetailView(planetMesh) {
             detailCamera.aspect = width / height;
             detailCamera.updateProjectionMatrix();
             detailRenderer.setSize(width, height);
+            
+            // Recalculer le zoom adaptatif
+            detailDefaultCameraZ = calculateAdaptiveZoom();
+            detailTargetCameraZ = detailDefaultCameraZ;
+            detailCamera.position.z = detailDefaultCameraZ;
         }
     }, 50);
     
