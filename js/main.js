@@ -515,6 +515,31 @@ let currentDetailPlanet = null;
 let isDraggingDetail = false;
 let previousDetailMousePosition = { x: 0, y: 0 };
 let isDetailAnimating = false;
+let detailTargetCameraZ = 60;
+const detailDefaultCameraZ = 60;
+const detailFocusedCameraZ = 42;
+let detailHasTargetQuaternion = false;
+const detailTargetQuaternion = new THREE.Quaternion();
+const detailContinentDirections = new Map();
+
+function clearDetailFocus() {
+    detailTargetCameraZ = detailDefaultCameraZ;
+    detailHasTargetQuaternion = false;
+}
+
+function focusOnContinent(continentName) {
+    if (!detailPlanetGroup) return;
+    const direction = detailContinentDirections.get(continentName);
+    if (!direction) return;
+
+    detailTargetCameraZ = detailDefaultCameraZ;
+    const desiredQuaternion = new THREE.Quaternion().setFromUnitVectors(
+        direction.clone().normalize(),
+        new THREE.Vector3(0, 0, 1)
+    );
+    detailTargetQuaternion.copy(desiredQuaternion);
+    detailHasTargetQuaternion = true;
+}
 
 function renderDetailContinentCards(planet, activeContinentName = '') {
     const container = document.getElementById('detail-continent-cards');
@@ -551,6 +576,7 @@ function renderDetailContinentCards(planet, activeContinentName = '') {
 
 function showPlanetInfo(planet) {
     if (!planet) return;
+    clearDetailFocus();
     document.getElementById('detail-title').textContent = planet.name.toUpperCase();
     document.getElementById('detail-description').textContent = planet.description;
     renderDetailContinentCards(planet);
@@ -610,6 +636,13 @@ function animateDetail() {
 
     if (detailPlanetGroup) {
         detailPlanetGroup.rotation.y += 0.0003;
+        if (detailHasTargetQuaternion) {
+            detailPlanetGroup.quaternion.slerp(detailTargetQuaternion, 0.08);
+        }
+    }
+
+    if (detailCamera) {
+        detailCamera.position.z = THREE.MathUtils.lerp(detailCamera.position.z, detailTargetCameraZ, 0.08);
     }
 
     detailRenderer.render(detailScene, detailCamera);
@@ -633,11 +666,13 @@ function clearDetailPlanetGroup() {
     }
     detailPlanetGroup = null;
     detailContinentMeshes = [];
+    detailContinentDirections.clear();
 }
 
 
 function createContinentSegments(planet) {
     clearDetailPlanetGroup();
+    clearDetailFocus();
 
     detailPlanetGroup = new THREE.Group();
     detailScene.add(detailPlanetGroup);
@@ -667,6 +702,7 @@ function createContinentSegments(planet) {
         const color = continentColors[index % continentColors.length];
 
         const centerDir = getFibonacciSphereDirection(index, continents.length);
+        detailContinentDirections.set(continent.name, centerDir.clone());
         const angularRadius = baseAngularRadius + (index % 2 === 0 ? 0.04 : -0.02);
         const geometry = buildContinentPatchGeometry(sourceGeometry, centerDir, angularRadius, radius, {
             thresholdOffset: -0.08,
@@ -852,6 +888,10 @@ function showDetailView(planetMesh) {
     createContinentSegments(planet);
     startDetailAnimation();
 
+    if (detailCamera) {
+        detailCamera.position.z = detailDefaultCameraZ;
+    }
+
     // Afficher la vue
     const detailView = document.getElementById('detail-view');
     detailView.style.display = 'flex';
@@ -877,6 +917,7 @@ function showDetailView(planetMesh) {
 function showContinentInfo(continent) {
     document.getElementById('detail-title').textContent = continent.name.toUpperCase();
     document.getElementById('detail-description').textContent = continent.detail;
+    focusOnContinent(continent.name);
     if (currentDetailPlanet) {
         renderDetailContinentCards(currentDetailPlanet, continent.name);
     }

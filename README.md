@@ -7,11 +7,14 @@ Le projet met en scène des domaines de compétences sous forme de planètes en 
 
 - Scène 3D temps réel avec interactions souris et tactile
 - Système d’orbites elliptiques avec variation de vitesse selon la distance au soleil
-- Ceintures d’astéroïdes avec trajectoires elliptiques animées (et non plus circulaires)
-- Vue détail intégrée pour afficher les informations d’une planète
-- Cartes de continents en vue détail (petites cases cliquables avec libellé et résumé)
+- Ceintures d'astéroïdes avec rotation circulaire fluide
+- Vue détail intégrée avec planète 3D interactive
+- Légende des continents en vue détail (petites cases colorées avec nom)
+- Système de focus sur les continents (orientation automatique de la planète)
 - Aperçu des continents directement visible en vue galaxie
-- Design visuel spatial avec effets lumineux et ceintures d’astéroïdes
+- Géométrie polygonale procédurale pour les continents (patches + relief)
+- Bouton retour stylisé avec effets lumineux
+- Design visuel spatial avec effets lumineux et animations fluides
 
 ## Démonstration locale
 
@@ -41,17 +44,26 @@ python -m http.server 8000
 
 ## Contrôles
 
-### Desktop
+### Vue Galaxie
 
+**Desktop :**
 - Clic gauche + mouvement : rotation de la scène
 - Molette : zoom
 - Clic sur une planète : ouverture de la vue détail
+- Clic sur le soleil : ouverture du CV (PDF)
 
-### Mobile / Tactile
-
+**Mobile / Tactile :**
 - Glisser : rotation de la scène
 - Pincer : zoom
-- Tap : ouverture de la vue détail
+- Tap sur une planète : ouverture de la vue détail
+- Tap sur le soleil : ouverture du CV
+
+### Vue Détail
+
+- Bouton ← (en haut à gauche) : retour à la vue galaxie
+- Clic sur un continent : focus et orientation de la planète
+- Clic sur la planète : affichage des informations générales
+- Rotation automatique de la planète
 
 ## Domaines représentés
 
@@ -116,11 +128,12 @@ La génération des continents repose sur deux niveaux complémentaires :
 - **Vue galaxie** : aperçu simplifié des continents sur chaque planète
 - **Vue détail** : version plus dense (patch + polygones) avec interaction au survol/clic
 
-### Astéroïdes elliptiques
+### Ceintures d'astéroïdes
 
-- Chaque astéroïde possède ses propres paramètres d’ellipse (`radiusX`, `radiusZ`, angle, vitesse)
-- `updateAsteroidBeltOrbit(...)` met à jour la position de tous les points à chaque frame
-- Le résultat donne une trajectoire ovale vivante avec légère variation verticale
+- Rotation circulaire fluide autour du soleil
+- Variation verticale légère pour un effet 3D naturel
+- Particules individuelles tournant sur elles-mêmes
+- Animation continue via `rotateY()` du groupe parent
 
 ## Pistes d’amélioration
 
