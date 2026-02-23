@@ -72,7 +72,9 @@ python -m http.server 8000
 **Mobile / Tactile :**
 - Glisser : rotation de la scene
 - Pincer : zoom
-- Tap sur une planete : ouverture de la vue detail
+- Tap sur une planete : affichage du hover (nom + competences)
+- Double tap sur la meme planete : ouverture de la vue detail
+- Tap dans le vide : reset du hover
 - Tap sur le soleil : ouverture du CV
 
 ### Vue Detail

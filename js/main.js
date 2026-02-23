@@ -328,7 +328,8 @@ const touchState = {
     lastX: 0,
     lastY: 0,
     isPinching: false,
-    lastDistance: 0
+    lastDistance: 0,
+    hoveredPlanetMesh: null  // planete selectionnee au 1er tap
 };
 
 function getTouchDistance(touchA, touchB) {
@@ -350,7 +351,7 @@ window.addEventListener('touchstart', (event) => {
         touchState.isPinching = false;
         touchState.lastX = touch.clientX;
         touchState.lastY = touch.clientY;
-        updateHoverFromPointer(touch.clientX, touch.clientY);
+        // Ne pas appeler updateHoverFromPointer ici, géré dans touchend
     } else if (event.touches.length === 2) {
         touchState.isPinching = true;
         touchState.isDragging = false;
@@ -388,7 +389,11 @@ window.addEventListener('touchmove', (event) => {
         touchState.lastX = touch.clientX;
         touchState.lastY = touch.clientY;
         touchState.hasMoved = true;
-        updateHoverFromPointer(touch.clientX, touch.clientY);
+        // On a bougé : annuler le hover tactile en cours
+        if (touchState.hoveredPlanetMesh) {
+            touchState.hoveredPlanetMesh = null;
+            updateHoverFromPointer(-9999, -9999);
+        }
         event.preventDefault();
     }
 }, { passive: false });
@@ -404,18 +409,28 @@ window.addEventListener('touchend', (event) => {
     if (!touchState.isPinching && !touchState.hasMoved && event.changedTouches.length > 0) {
         const touch = event.changedTouches[0];
         const hitObject = getSpaceIntersection(touch.clientX, touch.clientY);
+
         if (hitObject && isObjectInSunHierarchy(hitObject)) {
             suppressNextClick = true;
             openCv();
         } else {
             const planet = getPlanetFromObject(hitObject);
+
             if (!planet) {
-                touchState.isDragging = false;
-                touchState.isPinching = false;
-                return;
+                // Tap dans le vide : reset le hover
+                touchState.hoveredPlanetMesh = null;
+                updateHoverFromPointer(-9999, -9999);
+            } else if (touchState.hoveredPlanetMesh === planet) {
+                // 2e tap sur la meme planete : ouvrir la vue detail
+                suppressNextClick = true;
+                showDetailView(planet);
+                touchState.hoveredPlanetMesh = null;
+            } else {
+                // 1er tap sur une planete : afficher le hover
+                touchState.hoveredPlanetMesh = planet;
+                updateHoverFromPointer(touch.clientX, touch.clientY);
+                suppressNextClick = true;
             }
-            suppressNextClick = true;
-            showDetailView(planet);
         }
     }
 
