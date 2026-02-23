@@ -550,6 +550,9 @@ function showDetailView(planetMesh) {
     detailView.style.display = 'flex';
     setTimeout(() => { detailView.classList.add('active'); }, 10);
 
+    const pauseBtn = document.getElementById('animation-pause-btn');
+    if (pauseBtn) pauseBtn.classList.add('hidden');
+
     setTimeout(() => resizeDetailView(), 50);
 
     showPlanetInfo(planet);
@@ -559,6 +562,9 @@ function hideDetailView() {
     const detailView = document.getElementById('detail-view');
     detailView.classList.remove('active');
     setTimeout(() => { detailView.style.display = 'none'; }, 400);
+
+    const pauseBtn = document.getElementById('animation-pause-btn');
+    if (pauseBtn) pauseBtn.classList.remove('hidden');
 
     const continentCards = document.getElementById('detail-continent-cards');
     if (continentCards) continentCards.innerHTML = '';

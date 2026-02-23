@@ -212,9 +212,12 @@ window.addEventListener('touchend', (event) => {
                 showDetailView(planet);
                 touchState.hoveredPlanetMesh = null;
             } else {
+                // Premier tap : hover + ouvre directement la vue détail sur mobile
                 touchState.hoveredPlanetMesh = planet;
                 updateHoverFromPointer(touch.clientX, touch.clientY);
                 suppressNextClick = true;
+                showDetailView(planet);
+                touchState.hoveredPlanetMesh = null;
             }
         }
     }
