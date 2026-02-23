@@ -17,7 +17,7 @@ function updateControlsText() {
     if (window.innerWidth <= 768) {
         controlsText.textContent = 'Glisser: Rotation | Pincer: Zoom | Tap: Details';
     } else {
-        controlsText.textContent = 'Clic gauche + mouvement: Rotation | Molette: Zoom | Clic: Détails';
+        controlsText.textContent = 'Clic gauche + mouvement: Rotation | Molette: Zoom | Clic: Details';
     }
 }
 
@@ -510,15 +510,142 @@ function updateOrbits() {
         mesh.rotation.y += 0.004;
     });
 }
-// Bouton de mise en pause de l'animation
-const animationPauseBtn = document.getElementById('animation-pause-btn');
+
+// === PAUSE ANIMATION ===
 let isAnimationPaused = false;
-if (animationPauseBtn) {
-    animationPauseBtn.addEventListener('click', () => {
-        isAnimationPaused = !isAnimationPaused;
-        animationPauseBtn.textContent = isAnimationPaused ? '▶️' : '⏸️';
+const planetLabels = [];
+
+// Creer les etiquettes pour chaque planete
+function createPlanetLabels() {
+    // Creer un SVG container pour les lignes
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
+    svg.style.width = '100%';
+    svg.style.height = '100%';
+    svg.style.pointerEvents = 'none';
+    svg.style.zIndex = '99';
+    document.body.appendChild(svg);
+    
+    planetsObjects.forEach((mesh, index) => {
+        // Creer l'etiquette simple avec le nom
+        const label = document.createElement('div');
+        label.className = 'planet-label';
+        label.innerHTML = `&#10142; ${mesh.userData.planet.name}`;
+        document.body.appendChild(label);
+        
+        // Creer une ligne SVG
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('stroke', '#ff99ff');
+        line.setAttribute('stroke-width', '1');
+        line.setAttribute('opacity', '0');
+        line.style.transition = 'opacity 0.2s ease';
+        svg.appendChild(line);
+        
+        planetLabels.push({ element: label, mesh: mesh, line: line });
     });
 }
+
+// Mettre a jour la position des etiquettes et les lignes
+function updatePlanetLabels() {
+    const margin = 8;
+    const gap = 18;       // distance entre bord planete et bord etiquette
+    const elHeight = 18;  // hauteur approximative d'une etiquette
+
+    planetLabels.forEach(({ element, mesh, line }) => {
+        // Utiliser la position MONDE pour tenir compte de la rotation de la scene
+        const worldPos = new THREE.Vector3();
+        mesh.getWorldPosition(worldPos);
+        const vector = worldPos.clone();
+        vector.project(camera);
+
+        // Visible : devant la camera
+        const isVisible = vector.z < 1 && vector.z > -1;
+
+        if (isVisible) {
+            const sx = (vector.x * 0.5 + 0.5) * window.innerWidth;
+            const sy = (-(vector.y * 0.5) + 0.5) * window.innerHeight;
+
+            // Rayon en pixels (offset dans l'espace monde)
+            const planetSize = mesh.userData.planet.size / 2;
+            const rv = worldPos.clone().add(new THREE.Vector3(planetSize, 0, 0));
+            rv.project(camera);
+            const radiusPx = Math.abs((rv.x * 0.5 + 0.5) * window.innerWidth - sx);
+
+            // Cote : mettre l'etiquette a gauche si la planete est sur la droite
+            const onRight = sx > window.innerWidth * 0.5;
+
+            // Mettre a jour le texte / fleche seulement si le cote change
+            const side = onRight ? 'left' : 'right';
+            if (element.dataset.side !== side) {
+                element.dataset.side = side;
+                element.innerHTML = onRight
+                    ? `${mesh.userData.planet.name} &larr;`
+                    : `&rarr; ${mesh.userData.planet.name}`;
+            }
+
+            // Centrer verticalement, clamp dans l'ecran
+            const labelTop = Math.max(margin, Math.min(window.innerHeight - elHeight - margin, sy - elHeight / 2));
+            const labelCenterY = labelTop + elHeight / 2;
+
+            element.style.top = `${labelTop}px`;
+            element.style.opacity = isAnimationPaused ? '1' : '0';
+
+            let lineX1, lineX2;
+
+            if (onRight) {
+                // Etiquette a gauche : son bord DROIT = bord gauche planete - gap
+                const rightEdge = sx - radiusPx - gap;
+                element.style.left = `${rightEdge}px`;
+                element.style.transform = 'translateX(-100%)';
+                lineX1 = sx - radiusPx;  // bord gauche de la planete
+                lineX2 = rightEdge;      // bord droit de l'etiquette
+            } else {
+                // Etiquette a droite : son bord GAUCHE = bord droit planete + gap
+                const leftEdge = sx + radiusPx + gap;
+                element.style.left = `${leftEdge}px`;
+                element.style.transform = 'none';
+                lineX1 = sx + radiusPx;  // bord droit de la planete
+                lineX2 = leftEdge;       // bord gauche de l'etiquette
+            }
+
+            line.setAttribute('x1', lineX1);
+            line.setAttribute('y1', sy);
+            line.setAttribute('x2', lineX2);
+            line.setAttribute('y2', labelCenterY);
+            line.setAttribute('opacity', isAnimationPaused ? '0.6' : '0');
+        } else {
+            element.style.opacity = '0';
+            line.setAttribute('opacity', '0');
+        }
+    });
+}
+
+// Afficher/cacher les etiquettes
+function togglePlanetLabels(show) {
+    // Les etiquettes s'affichent/cachent automatiquement via updatePlanetLabels
+    // Cette fonction sert juste a forcer la mise a jour immediate
+    if (show) {
+        updatePlanetLabels();
+    }
+}
+
+// Bouton de mise en pause de l'animation
+const animationPauseBtn = document.getElementById('animation-pause-btn');
+console.log('Bouton pause trouve:', animationPauseBtn);
+if (animationPauseBtn) {
+    animationPauseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isAnimationPaused = !isAnimationPaused;
+        animationPauseBtn.innerHTML = isAnimationPaused ? '&#9654;' : '&#9208;';
+        togglePlanetLabels(isAnimationPaused);
+        console.log('Animation pausee:', isAnimationPaused);
+    });
+} else {
+    console.error('Bouton pause non trouve!');
+}
+
 // === VUE DÉTAIL ===
 let detailScene = null;
 let detailCamera = null;
@@ -988,11 +1115,16 @@ document.addEventListener('DOMContentLoaded', () => {
 function animate() {
     requestAnimationFrame(animate);
 
-    // Animations
-    rotateSun();
-    rotateBelts();
-    updateOrbits();
-    animatePlanetHover();
+    // Animations (pause si isAnimationPaused est true)
+    if (!isAnimationPaused) {
+        rotateSun();
+        rotateBelts();
+        updateOrbits();
+        animatePlanetHover();
+    }
+    
+    // Mettre a jour les positions des etiquettes en continu pour qu'elles suivent la camera
+    updatePlanetLabels();
 
     renderer.render(scene, camera);
 }
@@ -1000,3 +1132,6 @@ function animate() {
 animate();
 
 updateControlsText();
+
+// Creer les etiquettes apres que tout soit charge
+createPlanetLabels();
