@@ -5,16 +5,25 @@ Le projet met en scène des domaines de compétences sous forme de planètes en 
 
 ## Aperçu
 
-- Scène 3D temps réel avec interactions souris et tactile
-- Système d’orbites elliptiques avec variation de vitesse selon la distance au soleil
-- Ceintures d'astéroïdes avec rotation circulaire fluide
-- Vue détail intégrée avec planète 3D interactive
-- Légende des continents en vue détail (petites cases colorées avec nom)
-- Système de focus sur les continents (orientation automatique de la planète)
-- Aperçu des continents directement visible en vue galaxie
-- Géométrie polygonale procédurale pour les continents (patches + relief)
-- Bouton retour stylisé avec effets lumineux
-- Design visuel spatial avec effets lumineux et animations fluides
+### Fonctionnalités principales
+
+- **Scène 3D temps réel** avec interactions souris et tactile
+- **Orbites elliptiques dynamiques** avec variation de vitesse (loi de Kepler)
+- **Ceintures d'astéroïdes** avec rotation circulaire fluide
+- **Vue détail immersive** avec planète 3D interactive et rotation automatique
+- **Légende interactive** des continents avec indicateurs colorés
+- **Système de focus** sur les continents (orientation automatique par quaternions)
+- **Aperçu des continents** visible directement en vue galaxie
+- **Géométrie procédurale** avec algorithme de Fibonacci et bruit 3D
+- **Interface moderne** avec bouton retour stylisé et effets lumineux
+- **Animations fluides** avec transitions et interpolations
+
+### Interface utilisateur
+
+- Navigation intuitive entre vue galaxie et vue détail
+- Légende cliquable des continents avec descriptions
+- Bouton retour avec animation de pulsation et rotation
+- Responsive design adapté mobile et desktop
 
 ## Démonstration locale
 
@@ -98,14 +107,33 @@ galaxy-test/
 └── toggle.png
 ```
 
-## Notes techniques
+## Architecture du code
 
-- Les données des planètes sont dans js/data.js
-- Les fonctions de génération géométrique (continents/polygones) sont dans js/geometry.js
-- La logique de scène et d’interaction est dans js/main.js
-- Les détails des planètes s’affichent dans une vue intégrée (pas de pages séparées)
-- Les orbites sont ovales et dynamiques (accélération proche du soleil, décélération à l’éloignement)
-- Le soleil est cliquable/tappable et ouvre CV.pdf
+### Organisation des fichiers
+
+- **js/data.js** : Configuration des planètes (8 domaines) et couleurs des continents
+- **js/geometry.js** : Algorithmes de génération géométrique procédurale
+  - `getFibonacciSphereDirection()` : distribution uniforme sur sphère
+  - `pseudoNoise3()` : bruit procédural 3D pour variations naturelles
+  - `buildContinentPatchGeometry()` : génération des patches de continents
+  - `addPolygonReliefMeshes()` : ajout de relief polygonal
+- **js/main.js** : Logique principale de la scène et interactions
+  - Gestion des deux vues (galaxie et détail)
+  - Système d'orbites elliptiques avec variation de vitesse
+  - Raycasting pour détection de clics
+  - Animations et transitions (quaternions, lerp)
+- **css/style.css** : Styles avec variables CSS et animations
+  - Thème spatial avec couleurs violettes/roses
+  - Effets de glow et transitions fluides
+  - Responsive breakpoints
+
+### Points techniques clés
+
+- Orbites elliptiques avec calcul de vitesse proportionnel à la distance
+- Rotation des planètes uniforme via THREE.Group
+- Focus sur continents avec interpolation quaternion (slerp)
+- Cache-busting via paramètre de version CSS (?v=2.0)
+- Le soleil est cliquable et ouvre CV.pdf
 
 ## Détails du code
 
@@ -126,7 +154,8 @@ La génération des continents repose sur deux niveaux complémentaires :
 ### Où cela s’applique
 
 - **Vue galaxie** : aperçu simplifié des continents sur chaque planète
-- **Vue détail** : version plus dense (patch + polygones) avec interaction au survol/clic
+- **Vue détail** : version plus dense (patch + polygones) avec interaction au clic
+- **Focus continent** : orientation automatique de la planète via quaternion.slerp()
 
 ### Ceintures d'astéroïdes
 

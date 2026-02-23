@@ -562,7 +562,7 @@ function renderDetailContinentCards(planet, activeContinentName = '') {
             <span class="detail-continent-color" style="background:${colorHex}"></span>
             <span class="detail-continent-text">
                 <span class="detail-continent-name">${continent.name}</span>
-                <span class="detail-continent-hint">→ ${continent.detail}</span>
+                <span class="detail-continent-hint">${continent.detail}</span>
             </span>
         `;
 
