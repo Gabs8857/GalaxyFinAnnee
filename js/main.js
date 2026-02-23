@@ -21,125 +21,6 @@ function updateControlsText() {
     }
 }
 
-// Planètes et leurs infos avec orbites
-const planets = [
-    { 
-        name: 'Dev Web', 
-        size: 12, 
-        distance: 50, 
-        color: 0xb366ff, 
-        skills: 'React, Vue, Node.js, TypeScript', 
-        speed: 0.015,
-        description: 'Une de mes principales spécificités en tant qu\'étudiant, c\'est ma polyvalence. Notamment dans le domaine du web où, en plus de développer avancé.',
-        continents: [
-            { name: 'Frontend', detail: 'React, Vue.js, CSS/SCSS, Responsive Design, HTML5' },
-            { name: 'Backend', detail: 'Node.js, Databases, APIs REST' },
-            { name: 'Outils', detail: 'TypeScript, Webpack, Git, Testing, Docker, VM' }
-        ]
-    },
-    { 
-        name: 'Infographie', 
-        size: 18, 
-        distance: 85, 
-        color: 0xff66cc, 
-        skills: 'Blender, Photoshop, 3D Design', 
-        speed: 0.008,
-        description: 'Expertise en création 3D et design graphique avec Blender et Photoshop. Création de modèles, textures, et rendus professionnels.',
-        continents: [
-            { name: 'Modélisation', detail: 'Blender, Sculpting, Hard Surface' },
-            { name: 'Texturing', detail: 'PBR, Materials, UV Mapping' },
-            { name: 'Design', detail: 'Photoshop, Illustration, Composition, Branding' }
-        ]
-    },
-    { 
-        name: 'Audiovisuel', 
-        size: 10, 
-        distance: 120, 
-        color: 0x9933ff, 
-        skills: 'Montage, Motion, Effets VFX', 
-        speed: 0.005,
-        description: 'Maîtrise du montage vidéo et des effets visuels. Création de contenu audiovisuel dynamique et professionnel.',
-        continents: [
-            { name: 'Montage', detail: 'Premiere Pro, Canva, CapCut' },
-            { name: 'Motion', detail: 'After Effects, Blender, Keyframing, Animation, Transitions' },
-            { name: 'VFX', detail: 'Compositing, Color Grading, Effets Visuels' }
-        ]
-    },
-    { 
-        name: 'Design UI/UX', 
-        size: 14, 
-        distance: 155, 
-        color: 0xdd66ff, 
-        skills: 'Figma, Adobe XD, UX Design', 
-        speed: 0.003,
-        description: 'Conception d\'interfaces utilisateur modernes et ergonomiques. Création d\'expériences utilisateur optimales.',
-        continents: [
-            { name: 'Interface', detail: 'Figma, Adobe XD, Wireframing' },
-            { name: 'Expérience', detail: 'UX Research, User Testing, Personas, Flows' },
-            { name: 'Accessibilité', detail: 'W3C, Responsive Design, Inclusif' }
-        ]
-    },
-    { 
-        name: 'Programmation', 
-        size: 11, 
-        distance: 60, 
-        color: 0xaa55ff, 
-        skills: 'Python, C++, JavaScript', 
-        speed: 0.012,
-        description: 'Programmation multi-langages avec focus sur la logique et les structures de données.',
-        continents: [
-            { name: 'Python', detail: 'Data Science, Scripts, Automation, Django' },
-            { name: 'PHP', detail: 'Web Development, Symfony, APIs' },
-            { name: 'Tailwind', detail: 'CSS Framework, Utility-First, Responsive Design' },
-            { name: 'Sass', detail: 'CSS Preprocessor, Variables, Mixins, Nesting' },
-            { name: 'C++', detail: 'Performance, Game Dev, Systèmes, Algorithm Optimization' },
-            { name: 'JavaScript', detail: 'Web, Full-Stack, Frameworks, Node.js' }
-        ]
-    },
-    { 
-        name: 'Animation', 
-        size: 15, 
-        distance: 95, 
-        color: 0xff99dd, 
-        skills: 'Keyframe, Physics, Rigging', 
-        speed: 0.007,
-        description: 'Création d\'animations fluides et réalistes pour la 3D et l\'audiovisuel.',
-        continents: [
-            { name: 'Keyframe', detail: 'Traditional Animation, Timing, Easing' },
-            { name: 'Simulation', detail: 'Physics, Cloth Simulation, Particles' }
-        ]
-    },
-    { 
-        name: 'Modélisation', 
-        size: 13, 
-        distance: 130, 
-        color: 0xbb44ff, 
-        skills: 'Sculpting, Texturing, Rendering', 
-        speed: 0.004,
-        description: 'Modélisation 3D avancée avec sculpting, texturing haute résolution et rendering.',
-        continents: [
-            { name: 'Sculpting', detail: 'Dynamesh, ZBrush, Digital Sculpting, Detail' },
-            { name: 'Baking', detail: 'Normal Maps, Ambient Occlusion, Displacement' },
-            { name: 'Rendering', detail: 'Cycles, Eevee, Render Passes, Quality' }
-        ]
-    },
-    { 
-        name: 'Game Dev', 
-        size: 16, 
-        distance: 165, 
-        color: 0xff77cc, 
-        skills: 'Unity, Unreal, C#', 
-        speed: 0.002,
-        description: 'Développement de jeux vidéo complets avec Unity et Unreal Engine.',
-        continents: [
-            { name: 'Unity', detail: 'C#, Physics Engine, Game Logic, Scripting' },
-            { name: 'Godot', detail: 'GDScript, 2D/3D, Node System, Open Source' },
-            { name: 'Unreal', detail: 'Blueprints, Optimization, Simulation' },
-            { name: 'Gameplay', detail: 'Mechanics Design, UI Systems, Audio Integration' }
-        ]
-    }
-];
-
 const planetsObjects = [];
 let hoveredPlanet = null;
 
@@ -147,6 +28,44 @@ let hoveredPlanet = null;
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 let suppressNextClick = false;
+
+function addGalaxyContinentPreview(planetMesh, planet) {
+    const continents = planet.continents || [];
+    if (continents.length === 0) return;
+
+    const planetRadius = planet.size / 2;
+    const sourceGeometry = new THREE.SphereGeometry(planetRadius + 0.2, 14, 10).toNonIndexed();
+    const baseAngularRadius = Math.max(0.35, 0.62 - (continents.length * 0.04));
+
+    continents.forEach((continent, index) => {
+        const centerDir = getFibonacciSphereDirection(index, continents.length);
+        const angularRadius = baseAngularRadius + (index % 2 === 0 ? 0.03 : -0.02);
+        const geometry = buildContinentPatchGeometry(sourceGeometry, centerDir, angularRadius, planetRadius, {
+            thresholdOffset: -0.09,
+            thresholdNoise: 0.12,
+            elevationBase: 0.07,
+            elevationAmount: 0.28,
+            elevationPower: 0.85,
+            surfaceOffset: 0.18
+        });
+        if (!geometry) return;
+
+        const material = new THREE.MeshPhongMaterial({
+            color: 0xefe7c7,
+            emissive: 0x2d1a12,
+            emissiveIntensity: 0.07,
+            shininess: 25,
+            transparent: true,
+            opacity: 0.95
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.userData = { isPreviewContinent: true };
+        planetMesh.add(mesh);
+
+        addPolygonReliefMeshes(planetMesh, centerDir, continent, planetRadius, 0xd4c59a, 0.7);
+    });
+}
 
 // Ajouter les lumières
 const ambientLight = new THREE.AmbientLight(0x6600ff, 0.3);
@@ -253,6 +172,7 @@ planets.forEach((planet, index) => {
 
     scene.add(mesh);
     planetsObjects.push(mesh);
+    addGalaxyContinentPreview(mesh, planet);
 
     // Ajouter des orbites visuelles
     const orbitGeometry = new THREE.BufferGeometry();
@@ -556,19 +476,11 @@ let detailRenderer = null;
 let detailRaycaster = new THREE.Raycaster();
 let detailMouse = new THREE.Vector2();
 let detailContinentMeshes = [];
+let detailPlanetGroup = null;
 let currentDetailPlanet = null;
 let isDraggingDetail = false;
 let previousDetailMousePosition = { x: 0, y: 0 };
 let isDetailAnimating = false;
-
-const continentColors = [
-    0xFF6B9D, // Rose vif
-    0x00D9FF, // Cyan
-    0x7B68EE, // Bleu violet
-    0xFF4500, // Orange rouge
-    0x32CD32, // Vert lime
-    0xFFD700, // Or
-];
 
 function initDetailView() {
     const detailCanvas = document.getElementById('detail-canvas');
@@ -622,8 +534,9 @@ function animateDetail() {
         return;
     }
 
-    // Rotation lente de la scène
-    detailScene.rotation.y += 0.0003;
+    if (detailPlanetGroup) {
+        detailPlanetGroup.rotation.y += 0.0003;
+    }
 
     detailRenderer.render(detailScene, detailCamera);
 }
@@ -634,77 +547,42 @@ function startDetailAnimation() {
     animateDetail();
 }
 
+function clearDetailPlanetGroup() {
+    if (detailPlanetGroup) {
+        detailPlanetGroup.traverse((object) => {
+            if (object.isMesh) {
+                if (object.geometry) object.geometry.dispose();
+                if (object.material) object.material.dispose();
+            }
+        });
+        detailScene.remove(detailPlanetGroup);
+    }
+    detailPlanetGroup = null;
+    detailContinentMeshes = [];
+}
+
 
 function createContinentSegments(planet) {
-    // Nettoyer les anciens meshes
-    detailContinentMeshes.forEach(mesh => {
-        if (mesh.geometry) mesh.geometry.dispose();
-        if (mesh.material) mesh.material.dispose();
-        detailScene.remove(mesh);
-    });
-    detailContinentMeshes = [];
+    clearDetailPlanetGroup();
+
+    detailPlanetGroup = new THREE.Group();
+    detailScene.add(detailPlanetGroup);
 
     const continents = planet.continents;
     const radius = 35;
 
-    const getFibonacciSphereDirection = (index, total) => {
-        const i = index + 0.5;
-        const phi = Math.acos(1 - (2 * i) / total);
-        const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-        return new THREE.Vector3(
-            Math.cos(theta) * Math.sin(phi),
-            Math.sin(theta) * Math.sin(phi),
-            Math.cos(phi)
-        ).normalize();
-    };
-
-    const buildContinentPatchGeometry = (sourceGeometry, centerDir, angularRadius) => {
-        const threshold = Math.cos(angularRadius);
-        const positions = sourceGeometry.attributes.position.array;
-        const patchPositions = [];
-
-        const v1 = new THREE.Vector3();
-        const v2 = new THREE.Vector3();
-        const v3 = new THREE.Vector3();
-        const centroid = new THREE.Vector3();
-
-        for (let i = 0; i < positions.length; i += 9) {
-            v1.set(positions[i], positions[i + 1], positions[i + 2]);
-            v2.set(positions[i + 3], positions[i + 4], positions[i + 5]);
-            v3.set(positions[i + 6], positions[i + 7], positions[i + 8]);
-
-            centroid.copy(v1).add(v2).add(v3).multiplyScalar(1 / 3).normalize();
-
-            if (centroid.dot(centerDir) >= threshold) {
-                patchPositions.push(
-                    v1.x, v1.y, v1.z,
-                    v2.x, v2.y, v2.z,
-                    v3.x, v3.y, v3.z
-                );
-            }
-        }
-
-        if (patchPositions.length === 0) {
-            return null;
-        }
-
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.Float32BufferAttribute(patchPositions, 3));
-        geometry.computeVertexNormals();
-        return geometry;
-    };
-
     // Créer la planète de base
     const baseGeometry = new THREE.IcosahedronGeometry(radius, 4);
-    const baseMaterial = new THREE.MeshPhongMaterial({
+    const baseMaterial = new THREE.MeshStandardMaterial({
         color: planet.color,
-        emissive: planet.color,
-        emissiveIntensity: 0.2,
-        shininess: 50,
+        emissive: 0x111111,
+        emissiveIntensity: 0.06,
+        roughness: 0.9,
+        metalness: 0.05,
     });
     const baseMesh = new THREE.Mesh(baseGeometry, baseMaterial);
     baseMesh.userData.isContinent = false;
-    detailScene.add(baseMesh);
+    detailPlanetGroup.add(baseMesh);
     detailContinentMeshes.push(baseMesh);
 
     // Créer et afficher tous les continents à la fois autour de la planète
@@ -716,18 +594,26 @@ function createContinentSegments(planet) {
 
         const centerDir = getFibonacciSphereDirection(index, continents.length);
         const angularRadius = baseAngularRadius + (index % 2 === 0 ? 0.04 : -0.02);
-        const geometry = buildContinentPatchGeometry(sourceGeometry, centerDir, angularRadius);
+        const geometry = buildContinentPatchGeometry(sourceGeometry, centerDir, angularRadius, radius, {
+            thresholdOffset: -0.08,
+            thresholdNoise: 0.13,
+            elevationBase: 0.2,
+            elevationAmount: 1.25,
+            elevationPower: 0.72,
+            surfaceOffset: 0.65
+        });
         if (!geometry) {
             return;
         }
 
-        const material = new THREE.MeshPhongMaterial({
+        const material = new THREE.MeshStandardMaterial({
             color: color,
-            emissive: color,
-            emissiveIntensity: 0.4,
-            shininess: 100,
+            emissive: 0x15110a,
+            emissiveIntensity: 0.06,
+            roughness: 0.92,
+            metalness: 0.03,
             transparent: true,
-            opacity: 0.9
+            opacity: 0.97
         });
 
         const mesh = new THREE.Mesh(geometry, material);
@@ -736,11 +622,14 @@ function createContinentSegments(planet) {
             isContinent: true,
             continent: continent,
             continentIndex: index,
-            originalOpacity: 0.9
+            originalOpacity: 0.97,
+            originalEmissiveIntensity: 0.06
         };
 
-        detailScene.add(mesh);
+        detailPlanetGroup.add(mesh);
         detailContinentMeshes.push(mesh);
+
+        addPolygonReliefMeshes(detailPlanetGroup, centerDir, continent, radius, color, 1.2, detailContinentMeshes);
     });
 }
 
@@ -788,12 +677,10 @@ function onDetailCanvasTouchMove(event) {
     detailTouchState.lastY = touch.clientY;
     detailTouchState.hasMoved = true;
 
-    detailContinentMeshes.forEach(mesh => {
-        if (mesh.userData && (mesh.userData.isContinent || !mesh.userData.isContinent)) {
-            mesh.rotation.y += deltaX * 0.005;
-            mesh.rotation.x += deltaY * 0.005;
-        }
-    });
+    if (detailPlanetGroup) {
+        detailPlanetGroup.rotation.y += deltaX * 0.005;
+        detailPlanetGroup.rotation.x += deltaY * 0.005;
+    }
 
     event.preventDefault();
 }
@@ -819,13 +706,10 @@ function onDetailCanvasInteraction(event) {
         
         previousDetailMousePosition = { x: event.clientX, y: event.clientY };
 
-        // Tourner tous les meshes continents ET la planète
-        detailContinentMeshes.forEach(mesh => {
-            if (mesh.userData && (mesh.userData.isContinent || !mesh.userData.isContinent)) {
-                mesh.rotation.y += deltaX * 0.005;
-                mesh.rotation.x += deltaY * 0.005;
-            }
-        });
+        if (detailPlanetGroup) {
+            detailPlanetGroup.rotation.y += deltaX * 0.005;
+            detailPlanetGroup.rotation.x += deltaY * 0.005;
+        }
         return;
     }
 
@@ -842,7 +726,7 @@ function onDetailCanvasInteraction(event) {
     detailContinentMeshes.forEach(mesh => {
         if (mesh.userData && mesh.userData.isContinent) {
             mesh.material.opacity = mesh.userData.originalOpacity || 0.8;
-            mesh.material.emissiveIntensity = 0.4;
+            mesh.material.emissiveIntensity = mesh.userData.originalEmissiveIntensity || 0.06;
         }
     });
 
@@ -851,7 +735,7 @@ function onDetailCanvasInteraction(event) {
     for (let i = 0; i < intersects.length; i++) {
         if (intersects[i].object.userData && intersects[i].object.userData.isContinent) {
             intersects[i].object.material.opacity = 1;
-            intersects[i].object.material.emissiveIntensity = 0.8;
+            intersects[i].object.material.emissiveIntensity = 0.18;
             detailRenderer.domElement.style.cursor = 'pointer';
             found = true;
             break;
@@ -918,8 +802,7 @@ function hideDetailView() {
     setTimeout(() => {
         detailView.style.display = 'none';
     }, 400);
-    detailContinentMeshes.forEach(mesh => detailScene.remove(mesh));
-    detailContinentMeshes = [];
+    clearDetailPlanetGroup();
     currentDetailPlanet = null;
     hoveredPlanet = null;
     

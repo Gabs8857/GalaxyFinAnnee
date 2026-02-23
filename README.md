@@ -8,6 +8,7 @@ Le projet met en scène des domaines de compétences sous forme de planètes en 
 - Scène 3D temps réel avec interactions souris et tactile
 - Système d’orbites elliptiques avec variation de vitesse selon la distance au soleil
 - Vue détail intégrée pour afficher les informations d’une planète
+- Aperçu des continents directement visible en vue galaxie
 - Design visuel spatial avec effets lumineux et ceintures d’astéroïdes
 
 ## Démonstration locale
@@ -76,6 +77,8 @@ galaxy-test/
 ├── css/
 │   └── style.css
 ├── js/
+│   ├── data.js
+│   ├── geometry.js
 │   └── main.js
 ├── CV.pdf
 └── toggle.png
@@ -83,7 +86,9 @@ galaxy-test/
 
 ## Notes techniques
 
-- Toute la logique applicative est centralisée dans js/main.js
+- Les données des planètes sont dans js/data.js
+- Les fonctions de génération géométrique (continents/polygones) sont dans js/geometry.js
+- La logique de scène et d’interaction est dans js/main.js
 - Les détails des planètes s’affichent dans une vue intégrée (pas de pages séparées)
 - Les orbites sont ovales et dynamiques (accélération proche du soleil, décélération à l’éloignement)
 
