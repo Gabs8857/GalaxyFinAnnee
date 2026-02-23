@@ -7,7 +7,9 @@ Le projet met en scène des domaines de compétences sous forme de planètes en 
 
 - Scène 3D temps réel avec interactions souris et tactile
 - Système d’orbites elliptiques avec variation de vitesse selon la distance au soleil
+- Ceintures d’astéroïdes avec trajectoires elliptiques animées (et non plus circulaires)
 - Vue détail intégrée pour afficher les informations d’une planète
+- Cartes de continents en vue détail (petites cases cliquables avec libellé et résumé)
 - Aperçu des continents directement visible en vue galaxie
 - Design visuel spatial avec effets lumineux et ceintures d’astéroïdes
 
@@ -91,6 +93,34 @@ galaxy-test/
 - La logique de scène et d’interaction est dans js/main.js
 - Les détails des planètes s’affichent dans une vue intégrée (pas de pages séparées)
 - Les orbites sont ovales et dynamiques (accélération proche du soleil, décélération à l’éloignement)
+- Le soleil est cliquable/tappable et ouvre CV.pdf
+
+## Détails du code
+
+### Génération des continents
+
+La génération des continents repose sur deux niveaux complémentaires :
+
+1. **Patch principal de continent**
+	- `buildContinentPatchGeometry(...)` part d’une sphère non indexée.
+	- Chaque triangle est testé selon son orientation (`dot` avec une direction centrale).
+	- Un bruit procédural (`pseudoNoise3`) perturbe le seuil pour casser les contours parfaits.
+	- Les sommets retenus sont légèrement extrudés pour donner du relief.
+
+2. **Relief polygonal additionnel**
+	- `addPolygonReliefMeshes(...)` ajoute de petits polyèdres autour de la zone du continent.
+	- Ces “blocs” renforcent l’aspect rocheux/polygonal et la lecture visuelle.
+
+### Où cela s’applique
+
+- **Vue galaxie** : aperçu simplifié des continents sur chaque planète
+- **Vue détail** : version plus dense (patch + polygones) avec interaction au survol/clic
+
+### Astéroïdes elliptiques
+
+- Chaque astéroïde possède ses propres paramètres d’ellipse (`radiusX`, `radiusZ`, angle, vitesse)
+- `updateAsteroidBeltOrbit(...)` met à jour la position de tous les points à chaque frame
+- Le résultat donne une trajectoire ovale vivante avec légère variation verticale
 
 ## Pistes d’amélioration
 

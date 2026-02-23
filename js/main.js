@@ -87,7 +87,7 @@ sun.position.set(0, 0, 0);
 scene.add(sun);
 
 function openCv() {
-    window.open('../CV.pdf', '_blank', 'noopener');
+    window.open('CV.pdf', '_blank', 'noopener');
 }
 
 // Ajouter un glow au soleil
@@ -209,6 +209,33 @@ function getPlanetIntersection(clientX, clientY) {
     return intersects.length > 0 ? intersects[0].object : null;
 }
 
+function getSpaceIntersection(clientX, clientY) {
+    mouse.x = (clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects([sun, ...planetsObjects], true);
+    return intersects.length > 0 ? intersects[0].object : null;
+}
+
+function isObjectInSunHierarchy(object) {
+    let current = object;
+    while (current) {
+        if (current === sun) return true;
+        current = current.parent;
+    }
+    return false;
+}
+
+function getPlanetFromObject(object) {
+    let current = object;
+    while (current) {
+        if (planetsObjects.includes(current)) return current;
+        current = current.parent;
+    }
+    return null;
+}
+
 function updateHoverFromPointer(clientX, clientY) {
     const planet = getPlanetIntersection(clientX, clientY);
 
@@ -251,14 +278,15 @@ window.addEventListener('click', (event) => {
         return; // Ne pas traiter les clics si la modal est ouverte
     }
 
-    const sunHit = getPlanetIntersection(event.clientX, event.clientY);
-    if (sunHit === sun) {
+    const hitObject = getSpaceIntersection(event.clientX, event.clientY);
+    if (hitObject && isObjectInSunHierarchy(hitObject)) {
         openCv();
         return;
     }
-    
-    if (!isDragging && hoveredPlanet) {
-        showDetailView(hoveredPlanet);
+
+    const hitPlanet = getPlanetFromObject(hitObject);
+    if (!isDragging && hitPlanet) {
+        showDetailView(hitPlanet);
     }
 });
 
@@ -375,11 +403,17 @@ window.addEventListener('touchend', (event) => {
 
     if (!touchState.isPinching && !touchState.hasMoved && event.changedTouches.length > 0) {
         const touch = event.changedTouches[0];
-        const planet = getPlanetIntersection(touch.clientX, touch.clientY);
-        if (planet === sun) {
+        const hitObject = getSpaceIntersection(touch.clientX, touch.clientY);
+        if (hitObject && isObjectInSunHierarchy(hitObject)) {
             suppressNextClick = true;
             openCv();
-        } else if (planet) {
+        } else {
+            const planet = getPlanetFromObject(hitObject);
+            if (!planet) {
+                touchState.isDragging = false;
+                touchState.isPinching = false;
+                return;
+            }
             suppressNextClick = true;
             showDetailView(planet);
         }
@@ -481,6 +515,46 @@ let currentDetailPlanet = null;
 let isDraggingDetail = false;
 let previousDetailMousePosition = { x: 0, y: 0 };
 let isDetailAnimating = false;
+
+function renderDetailContinentCards(planet, activeContinentName = '') {
+    const container = document.getElementById('detail-continent-cards');
+    if (!container) return;
+
+    container.innerHTML = '';
+    const continents = planet?.continents || [];
+
+    continents.forEach((continent, index) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'detail-continent-legend-item';
+        if (continent.name === activeContinentName) {
+            card.classList.add('active');
+        }
+
+        const colorHex = `#${continentColors[index % continentColors.length].toString(16).padStart(6, '0')}`;
+
+        card.innerHTML = `
+            <span class="detail-continent-color" style="background:${colorHex}"></span>
+            <span class="detail-continent-text">
+                <span class="detail-continent-name">${continent.name}</span>
+                <span class="detail-continent-hint">→ ${continent.detail}</span>
+            </span>
+        `;
+
+        card.addEventListener('click', () => {
+            showContinentInfo(continent);
+        });
+
+        container.appendChild(card);
+    });
+}
+
+function showPlanetInfo(planet) {
+    if (!planet) return;
+    document.getElementById('detail-title').textContent = planet.name.toUpperCase();
+    document.getElementById('detail-description').textContent = planet.description;
+    renderDetailContinentCards(planet);
+}
 
 function initDetailView() {
     const detailCanvas = document.getElementById('detail-canvas');
@@ -644,8 +718,13 @@ function getDetailIntersection(clientX, clientY) {
 
 function onDetailCanvasClick(event) {
     const hit = getDetailIntersection(event.clientX, event.clientY);
-    if (hit && hit.userData.isContinent && hit.userData.continent) {
+    if (hit && hit.userData && hit.userData.isContinent && hit.userData.continent) {
         showContinentInfo(hit.userData.continent);
+        return;
+    }
+
+    if (hit && currentDetailPlanet) {
+        showPlanetInfo(currentDetailPlanet);
     }
 }
 
@@ -692,8 +771,10 @@ function onDetailCanvasTouchEnd(event) {
     if (!detailTouchState.hasMoved && event.changedTouches.length > 0) {
         const touch = event.changedTouches[0];
         const hit = getDetailIntersection(touch.clientX, touch.clientY);
-        if (hit && hit.userData.isContinent && hit.userData.continent) {
+        if (hit && hit.userData && hit.userData.isContinent && hit.userData.continent) {
             showContinentInfo(hit.userData.continent);
+        } else if (hit && currentDetailPlanet) {
+            showPlanetInfo(currentDetailPlanet);
         }
     }
 }
@@ -736,6 +817,11 @@ function onDetailCanvasInteraction(event) {
         if (intersects[i].object.userData && intersects[i].object.userData.isContinent) {
             intersects[i].object.material.opacity = 1;
             intersects[i].object.material.emissiveIntensity = 0.18;
+            detailRenderer.domElement.style.cursor = 'pointer';
+            found = true;
+            break;
+        }
+        if (intersects[i].object.userData && intersects[i].object.userData.isContinent === false) {
             detailRenderer.domElement.style.cursor = 'pointer';
             found = true;
             break;
@@ -785,15 +871,15 @@ function showDetailView(planetMesh) {
         }
     }, 50);
     
-    // Afficher le premier continent par défaut
-    if (planet.continents.length > 0) {
-        showContinentInfo(planet.continents[0]);
-    }
+    showPlanetInfo(planet);
 }
 
 function showContinentInfo(continent) {
     document.getElementById('detail-title').textContent = continent.name.toUpperCase();
     document.getElementById('detail-description').textContent = continent.detail;
+    if (currentDetailPlanet) {
+        renderDetailContinentCards(currentDetailPlanet, continent.name);
+    }
 }
 
 function hideDetailView() {
@@ -802,6 +888,8 @@ function hideDetailView() {
     setTimeout(() => {
         detailView.style.display = 'none';
     }, 400);
+    const continentCards = document.getElementById('detail-continent-cards');
+    if (continentCards) continentCards.innerHTML = '';
     clearDetailPlanetGroup();
     currentDetailPlanet = null;
     hoveredPlanet = null;

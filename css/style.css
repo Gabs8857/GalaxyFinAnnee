@@ -210,6 +210,64 @@ canvas {
     animation: fadeIn 0.3s ease;
 }
 
+.detail-continent-cards {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.detail-continent-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    border: 1px solid rgba(255, 153, 255, 0.2);
+    background: rgba(255, 153, 255, 0.04);
+    color: var(--color-text-muted);
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.detail-continent-legend-item:hover {
+    border-color: var(--color-pink-300);
+    background: rgba(255, 153, 255, 0.1);
+}
+
+.detail-continent-legend-item.active {
+    border-color: var(--color-pink-300);
+    background: rgba(255, 153, 255, 0.14);
+}
+
+.detail-continent-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    flex: 0 0 auto;
+}
+
+.detail-continent-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.detail-continent-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-white);
+}
+
+.detail-continent-hint {
+    margin-top: 1px;
+    font-size: 11px;
+    color: var(--color-text-muted);
+    line-height: 1.3;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -385,6 +443,10 @@ canvas {
     #detail-description {
         font-size: 13px;
         line-height: 1.6;
+    }
+
+    .detail-continent-cards {
+        gap: 7px;
     }
 }
 
