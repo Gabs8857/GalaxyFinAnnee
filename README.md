@@ -1,43 +1,16 @@
 # Portfolio Cosmique
 
-Un portfolio interactif utilisant Three.js pour créer une visualisation 3D des compétences.
+Portfolio interactif en 3D construit avec Three.js.
+Le projet met en scène des domaines de compétences sous forme de planètes en orbite autour d’un soleil central.
 
-## 📁 Structure du projet
+## Aperçu
 
-```
-galaxy-test/
-├── index.html            # Page principale (galaxie interactive)
-├── css/
-│   └── style.css         # Styles globaux
-├── js/
-│   └── main.js           # Scène Three.js + interactions + vue détail
-├── CV.pdf                # CV ouvert via interaction
-└── toggle.png            # Favicon
-```
+- Scène 3D temps réel avec interactions souris et tactile
+- Système d’orbites elliptiques avec variation de vitesse selon la distance au soleil
+- Vue détail intégrée pour afficher les informations d’une planète
+- Design visuel spatial avec effets lumineux et ceintures d’astéroïdes
 
-## 🎮 Contrôles
-
-- **Clic gauche + mouvement** : Rotation de la scène
-- **Molette** : Zoom
-- **Clic sur une planète** : Voir les détails
-- **Tactile** : Glisser (rotation), pincer (zoom), tap (détails)
-
-## 🌍 Planètes
-
-Le portfolio contient 8 domaines d'expertise représentés comme des planètes orbitant autour d'un soleil central :
-
-1. **Dev Web** - Développement web (React, Vue, Node.js)
-2. **Infographie** - Design 3D et graphique
-3. **Audiovisuel** - Montage vidéo et VFX
-4. **Design UI/UX** - Conception d'interfaces
-5. **Programmation** - Multi-langages (Python, C++, JavaScript)
-6. **Animation** - Animation 3D et motion
-7. **Modélisation** - Modélisation 3D avancée
-8. **Game Dev** - Développement de jeux (Unity, Unreal)
-
-## 🚀 Utilisation
-
-### Démarrage local (serveur Python)
+## Démonstration locale
 
 Depuis la racine du projet, lancer :
 
@@ -47,29 +20,75 @@ python3 -m http.server 8000
 
 Puis ouvrir dans le navigateur :
 
-- `http://127.0.0.1:8000`
+```text
+http://127.0.0.1:8000
+```
 
-Pour arrêter le serveur :
+Arrêter le serveur avec :
 
-- `Ctrl + C` dans le terminal
+```text
+Ctrl + C
+```
 
-> Si `python3` ne fonctionne pas sur ta machine, essaie `python -m http.server 8000`.
+Si la commande python3 n’est pas disponible :
 
-### Utilisation
+```bash
+python -m http.server 8000
+```
 
-1. Démarrer le serveur local Python
-2. Ouvrir `http://127.0.0.1:8000`
-3. Explorer la galaxie avec la souris
-4. Cliquer sur une planète pour voir les détails
-5. Cliquer le bouton "←" pour revenir
+## Contrôles
 
-## 📦 Dépendances
+### Desktop
 
-- **Three.js** (v128) - Chargé via CDN
+- Clic gauche + mouvement : rotation de la scène
+- Molette : zoom
+- Clic sur une planète : ouverture de la vue détail
 
-## 📝 Notes
+### Mobile / Tactile
 
-- Tous les fichiers CSS sont consolidés dans `css/style.css`
-- Toute la logique JavaScript est centralisée dans `js/main.js`
-- Les détails d'une planète s'affichent dans une vue intégrée (pas de pages HTML séparées)
-- Les orbites sont elliptiques (ovales) avec une vitesse qui varie selon la distance au soleil
+- Glisser : rotation de la scène
+- Pincer : zoom
+- Tap : ouverture de la vue détail
+
+## Domaines représentés
+
+1. Dev Web
+2. Infographie
+3. Audiovisuel
+4. Design UI/UX
+5. Programmation
+6. Animation
+7. Modélisation
+8. Game Dev
+
+## Stack technique
+
+- Three.js (CDN v128)
+- HTML5
+- CSS3
+- JavaScript (vanilla)
+
+## Structure du projet
+
+```text
+galaxy-test/
+├── index.html
+├── css/
+│   └── style.css
+├── js/
+│   └── main.js
+├── CV.pdf
+└── toggle.png
+```
+
+## Notes techniques
+
+- Toute la logique applicative est centralisée dans js/main.js
+- Les détails des planètes s’affichent dans une vue intégrée (pas de pages séparées)
+- Les orbites sont ovales et dynamiques (accélération proche du soleil, décélération à l’éloignement)
+
+## Pistes d’amélioration
+
+- Ajouter un mode clair/sombre pour la couche UI
+- Ajouter des performances adaptatives selon la puissance de l’appareil
+- Ajouter une section crédits et licence
