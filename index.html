@@ -27,8 +27,16 @@
                 <h2 id="detail-title">Sélection d'un continent</h2>
                 <div id="detail-info">
                     <p id="detail-description" style="color: #888; font-size: 14px;">Cliquez sur un segment de la planète</p>
+                    <div id="skill-encart" class="skill-encart" aria-hidden="true">
+                        <button class="skill-encart-close" onclick="hideSkillEncart()" aria-label="Fermer">&#10005;</button>
+                        <div class="skill-encart-tag" id="skill-encart-planet"></div>
+                        <h3 class="skill-encart-title" id="skill-encart-name"></h3>
+                        <div class="skill-encart-continent" id="skill-encart-continent"></div>
+                        <p class="skill-encart-desc" id="skill-encart-desc"></p>
+                    </div>
                     <div id="detail-continent-cards" class="detail-continent-cards"></div>
                 </div>
+                <!-- Encart skill supprimé ici, déplacé inline ci-dessus -->
             </div>
         </div>
     </div>

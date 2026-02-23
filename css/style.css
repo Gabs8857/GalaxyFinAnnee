@@ -232,7 +232,7 @@ canvas {
 }
 
 #detail-description {
-    font-size: 14px;
+    font-size: 20px;
     line-height: 1.8;
     color: var(--color-text-muted);
     margin: 0;
@@ -450,17 +450,17 @@ canvas {
     }
 
     .detail-main {
-        flex-direction: flex-column;
+        flex-direction: column;
     }
 
     .detail-canvas-container {
         min-width: 100%;
-        height: 45%;
+        height: 50%;
     }
 
     .detail-sidebar {
         min-width: 100%;
-        height: 55%;
+        height: 50%;
         padding: 60px 24px 30px;
     }
 
@@ -471,7 +471,7 @@ canvas {
     }
 
     #detail-description {
-        font-size: 1.5em;
+        font-size: 2.2em;
         line-height: 1.6;
     }
 
@@ -564,13 +564,27 @@ canvas {
 /* Etiquettes des planetes en mode pause */
 .planet-label {
     position: absolute;
-    color: var(--color-pink-300);
     font-size: 13px;
     pointer-events: none;
     z-index: 100;
     transition: opacity 0.2s ease;
     white-space: nowrap;
+}
+
+.label-base {
+    color: var(--color-pink-300);
     text-shadow: 0 0 10px rgba(255, 153, 255, 0.5);
+    display: block;
+}
+
+.label-sun {
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #3399ff;
+    text-shadow: 0 0 10px rgba(51, 153, 255, 0.8);
+    white-space: nowrap;
+    clip-path: circle(0px at 0px 0px);
 }
 
 #planet-labels-svg {
@@ -602,4 +616,100 @@ canvas {
     font-size: 11px;
     color: var(--color-text-muted);
     line-height: 1.4;
+}
+
+/* === ENCART SKILL === */
+.skill-encart {
+    position: relative;
+    background: linear-gradient(160deg, rgba(30, 0, 60, 0.97) 0%, rgba(10, 0, 30, 0.99) 100%);
+    border: 1px solid rgba(255,153,255,0.25);
+    border-left: 3px solid var(--color-pink-300);
+    border-radius: 10px;
+    padding: 0 20px;
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.25s ease,
+                margin 0.3s ease,
+                padding 0.3s ease;
+    pointer-events: none;
+}
+
+.skill-encart.visible {
+    max-height: 260px;
+    opacity: 1;
+    padding: 18px 20px 20px;
+    margin: 16px 0;
+    pointer-events: all;
+}
+
+.skill-encart-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: 1px solid rgba(255,153,255,0.3);
+    color: var(--color-pink-300);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.skill-encart-close:hover {
+    background: rgba(255,153,255,0.15);
+}
+
+.skill-encart-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #000;
+    background: var(--color-pink-300);
+    border-radius: 20px;
+    padding: 3px 10px;
+    margin-bottom: 10px;
+}
+
+.skill-encart-title {
+    font-size: 26px;
+    font-weight: bold;
+    color: #fff;
+    letter-spacing: 0.04em;
+    margin: 0 0 10px;
+    text-transform: uppercase;
+}
+
+.skill-encart-continent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--color-text-muted);
+    margin-bottom: 14px;
+}
+
+.skill-encart-continent-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.skill-encart-desc {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin: 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 12px;
 }

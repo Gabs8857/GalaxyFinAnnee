@@ -34,8 +34,7 @@ scene.add(sunLight);
 // === SOLEIL ===
 const sunGeometry = new THREE.IcosahedronGeometry(25, 5);
 const sunMaterial = new THREE.MeshBasicMaterial({
-    color: 0xff66ff,
-    emissive: 0xff99ff
+    color: 0xff66ff
 });
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
 sun.position.set(0, 0, 0);

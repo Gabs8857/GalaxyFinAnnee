@@ -39,11 +39,28 @@ function addGalaxyContinentPreview(planetMesh, planet) {
     });
 }
 
+// Empêche les orbites planétaires de chevaucher les ceintures d'astéroïdes
+function safePlanetOrbit(rx, rz) {
+    const margin = 5;
+    for (const zone of BELT_ZONES) {
+        if (rz >= zone.innerZ && rz <= zone.outerZ) {
+            const centerZ = (zone.innerZ + zone.outerZ) / 2;
+            rz = rz >= centerZ ? zone.outerZ + margin : zone.innerZ - margin;
+        }
+        if (rx >= zone.innerX && rx <= zone.outerX) {
+            const centerX = (zone.innerX + zone.outerX) / 2;
+            rx = rx >= centerX ? zone.outerX + margin : zone.innerX - margin;
+        }
+    }
+    return { rx, rz };
+}
+
 function createPlanets() {
     planets.forEach((planet, index) => {
         const geometry = new THREE.IcosahedronGeometry(planet.size / 2, 4);
-        const orbitRadiusX = planet.distance;
-        const orbitRadiusZ = planet.distance * (0.72 + (index % 4) * 0.06);
+        const rawRx = planet.distance;
+        const rawRz = planet.distance * (0.72 + (index % 4) * 0.06);
+        const { rx: orbitRadiusX, rz: orbitRadiusZ } = safePlanetOrbit(rawRx, rawRz);
         const initialAngle = Math.random() * Math.PI * 2;
 
         const material = new THREE.MeshPhongMaterial({

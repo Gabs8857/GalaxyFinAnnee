@@ -17,9 +17,19 @@ function rotateSun() {
     sun.rotation.y += 0.003;
 }
 
-function rotateBelts() {
-    beltLine1.rotation.y += 0.0005;
-    beltLine2.rotation.y -= 0.0003;
+function updateBelts() {
+    [beltLine1, beltLine2].forEach(belt => {
+        const pos   = belt.mesh.geometry.attributes.position.array;
+        const count = belt.angles.length;
+        for (let i = 0; i < count; i++) {
+            belt.angles[i] += belt.speed;
+            const a = belt.angles[i];
+            pos[i * 3]     = Math.cos(a) * (belt.radiusX + belt.spreadsX[i]);
+            pos[i * 3 + 1] = belt.ys[i];
+            pos[i * 3 + 2] = Math.sin(a) * (belt.radiusZ + belt.spreadsZ[i]);
+        }
+        belt.mesh.geometry.attributes.position.needsUpdate = true;
+    });
 }
 
 function updateOrbits() {
@@ -58,7 +68,7 @@ function animate() {
 
     if (!isAnimationPaused) {
         rotateSun();
-        rotateBelts();
+        updateBelts();
         updateOrbits();
         animatePlanetHover();
     }

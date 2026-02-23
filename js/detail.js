@@ -44,7 +44,7 @@ let previousDetailMousePosition = { x: 0, y: 0 };
 let isDetailAnimating = false;
 let detailTargetCameraZ = 50;
 let detailDefaultCameraZ = 50;
-const detailFocusedCameraZ = 42;
+let detailFocusedCameraZ = 42;
 let detailHasTargetQuaternion = false;
 const detailTargetQuaternion = new THREE.Quaternion();
 const detailContinentDirections = new Map();
@@ -52,16 +52,38 @@ const detailContinentDirections = new Map();
 // --- Zoom adaptatif ---
 function calculateAdaptiveZoom() {
     const detailCanvas = document.getElementById('detail-canvas');
-    if (!detailCanvas) return 50;
+    if (!detailCanvas) return 110;
 
+    const width  = detailCanvas.clientWidth;
     const height = detailCanvas.clientHeight;
-    const width = detailCanvas.clientWidth;
-    const minDimension = Math.min(height, width);
+    const aspect = width / Math.max(height, 1);
 
-    const baseZoom = 50;
-    const zoomFactor = minDimension / 600;
-    const adaptiveZoom = baseZoom * Math.max(0.8, Math.min(zoomFactor, 1.2));
-    return Math.max(40, Math.min(adaptiveZoom, 70));
+    // Formule exacte : Z pour que la planète (rayon=35) occupe fillRatio de la dimension contraignante
+    // frustum half-height à distance Z = Z * tan(fov/2)
+    // Si aspect >= 1 (paysage) : c'est la hauteur qui contraint → Z = R / (fill * tan(fov/2))
+    // Si aspect <  1 (portrait) : c'est la largeur qui contraint → Z = R / (fill * tan(fov/2) * aspect)
+    const halfFOV  = (75 * Math.PI) / 360; // demi-FOV en radians
+    const fillRatio = 0.72;
+
+    const Z = aspect >= 1
+        ? 35 / (fillRatio * Math.tan(halfFOV))
+        : 35 / (fillRatio * Math.tan(halfFOV) * aspect);
+
+    return Math.round(Math.max(45, Math.min(Z, 220)));
+}
+
+function resizeDetailView() {
+    const detailCanvas = document.getElementById('detail-canvas');
+    if (!detailCanvas || !detailCamera || !detailRenderer) return;
+    const width  = detailCanvas.clientWidth;
+    const height = detailCanvas.clientHeight;
+    detailCamera.aspect = width / height;
+    detailCamera.updateProjectionMatrix();
+    detailRenderer.setSize(width, height);
+    detailDefaultCameraZ  = calculateAdaptiveZoom();
+    detailFocusedCameraZ  = detailDefaultCameraZ * 0.84;
+    detailTargetCameraZ   = detailDefaultCameraZ;
+    detailCamera.position.z = detailDefaultCameraZ;
 }
 
 // --- Focus continent ---
@@ -114,6 +136,7 @@ function renderDetailContinentCards(planet, activeContinentName = '') {
 
 function showPlanetInfo(planet) {
     if (!planet) return;
+    hideSkillEncart();
     clearDetailFocus();
     document.getElementById('detail-title').textContent = planet.name.toUpperCase();
     document.getElementById('detail-description').textContent = planet.description;
@@ -121,6 +144,7 @@ function showPlanetInfo(planet) {
 }
 
 function showContinentInfo(continent) {
+    hideSkillEncart();
     document.getElementById('detail-title').textContent = continent.name.toUpperCase();
     document.getElementById('detail-description').textContent = continent.detail;
     focusOnContinent(continent.name);
@@ -130,11 +154,63 @@ function showContinentInfo(continent) {
 }
 
 function showSkillInfo(skillName, continent) {
-    document.getElementById('detail-title').textContent = skillName.toUpperCase();
-    document.getElementById('detail-description').textContent = `${continent.name} · ${skillName}`;
+    // Le titre principal passe au continent, la description est masquée — tout est dans l'encart
+    document.getElementById('detail-title').textContent = continent.name.toUpperCase();
+    document.getElementById('detail-description').textContent = '';
     focusOnContinent(continent.name);
     if (currentDetailPlanet) {
         renderDetailContinentCards(currentDetailPlanet, continent.name);
+    }
+    showSkillEncart(skillName, continent);
+}
+
+// --- Encart skill ---
+function showSkillEncart(skillName, continent) {
+    const encart = document.getElementById('skill-encart');
+    if (!encart) return;
+
+    // Planet tag
+    const planetEl = document.getElementById('skill-encart-planet');
+    if (planetEl) planetEl.textContent = currentDetailPlanet ? currentDetailPlanet.name.toUpperCase() : '';
+
+    // Skill name
+    const nameEl = document.getElementById('skill-encart-name');
+    if (nameEl) nameEl.textContent = skillName;
+
+    // Continent avec couleur
+    const contEl  = document.getElementById('skill-encart-continent');
+    const contIdx = currentDetailPlanet ? (currentDetailPlanet.continents || []).findIndex(c => c.name === continent.name) : -1;
+    const color   = contIdx >= 0 ? `#${continentColors[contIdx % continentColors.length].toString(16).padStart(6, '0')}` : '#ff99ff';
+    if (contEl) {
+        contEl.innerHTML = `<span class="skill-encart-continent-dot" style="background:${color}"></span>${continent.name}`;
+        // Teindre aussi la bordure supérieure
+        encart.style.borderTopColor = color;
+        document.querySelector('.skill-encart-tag').style.background = color;
+    }
+
+    // Description : tous les skills du continent + détail du skill actif
+    const descEl = document.getElementById('skill-encart-desc');
+    if (descEl) {
+        const skills = continent.detail.split(',').map(s => s.trim());
+        const skillDetail = continent.skillDetails?.[skillName] || '';
+        const listHTML = skills.map(s =>
+            s === skillName
+                ? `<strong style="color:#fff">&#9658; ${s}</strong>`
+                : `<span style="opacity:0.5">${s}</span>`
+        ).join(' &nbsp;&middot;&nbsp; ');
+        descEl.innerHTML = listHTML
+            + (skillDetail ? `<br><span style="display:block;margin-top:10px;font-size:12px;opacity:0.75;line-height:1.6">${skillDetail}</span>` : '');
+    }
+
+    encart.setAttribute('aria-hidden', 'false');
+    encart.classList.add('visible');
+}
+
+function hideSkillEncart() {
+    const encart = document.getElementById('skill-encart');
+    if (encart) {
+        encart.classList.remove('visible');
+        encart.setAttribute('aria-hidden', 'true');
     }
 }
 
@@ -427,10 +503,6 @@ function initDetailView() {
     detailRenderer.setClearColor(0x1a0033, 0.3);
     detailCanvas.appendChild(detailRenderer.domElement);
 
-    detailDefaultCameraZ = calculateAdaptiveZoom();
-    detailCamera.position.z = detailDefaultCameraZ;
-    detailTargetCameraZ = detailDefaultCameraZ;
-
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     detailScene.add(ambientLight);
 
@@ -441,6 +513,15 @@ function initDetailView() {
     const backLight = new THREE.PointLight(0xaa66ff, 1);
     backLight.position.set(-50, -50, 30);
     detailScene.add(backLight);
+
+    detailDefaultCameraZ = calculateAdaptiveZoom();
+    detailFocusedCameraZ  = detailDefaultCameraZ * 0.84;
+    detailCamera.position.z = detailDefaultCameraZ;
+    detailTargetCameraZ      = detailDefaultCameraZ;
+
+    // Mise à jour lors d'un redimensionnement (rotation d'écran, split-view…)
+    const resizeObserver = new ResizeObserver(() => resizeDetailView());
+    resizeObserver.observe(detailCanvas);
 
     startDetailAnimation();
 
@@ -469,19 +550,7 @@ function showDetailView(planetMesh) {
     detailView.style.display = 'flex';
     setTimeout(() => { detailView.classList.add('active'); }, 10);
 
-    setTimeout(() => {
-        const detailCanvas = document.getElementById('detail-canvas');
-        const width = detailCanvas.clientWidth;
-        const height = detailCanvas.clientHeight;
-        if (detailCamera && detailRenderer) {
-            detailCamera.aspect = width / height;
-            detailCamera.updateProjectionMatrix();
-            detailRenderer.setSize(width, height);
-            detailDefaultCameraZ = calculateAdaptiveZoom();
-            detailTargetCameraZ = detailDefaultCameraZ;
-            detailCamera.position.z = detailDefaultCameraZ;
-        }
-    }, 50);
+    setTimeout(() => resizeDetailView(), 50);
 
     showPlanetInfo(planet);
 }

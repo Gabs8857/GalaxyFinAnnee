@@ -15,7 +15,8 @@ function createPlanetLabels() {
     planetsObjects.forEach((mesh) => {
         const label = document.createElement('div');
         label.className = 'planet-label';
-        label.innerHTML = `&#10142; ${mesh.userData.planet.name}`;
+        const text = `&#10142; ${mesh.userData.planet.name}`;
+        label.innerHTML = `<span class="label-base">${text}</span><span class="label-sun" aria-hidden="true">${text}</span>`;
         document.body.appendChild(label);
 
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -56,9 +57,11 @@ function updatePlanetLabels() {
 
             if (element.dataset.side !== side) {
                 element.dataset.side = side;
-                element.innerHTML = onRight
+                const newText = onRight
                     ? `${mesh.userData.planet.name} &larr;`
                     : `&rarr; ${mesh.userData.planet.name}`;
+                element.querySelector('.label-base').innerHTML = newText;
+                element.querySelector('.label-sun').innerHTML  = newText;
             }
 
             const labelTop = Math.max(margin, Math.min(window.innerHeight - elHeight - margin, sy - elHeight / 2));
@@ -88,6 +91,21 @@ function updatePlanetLabels() {
             line.setAttribute('x2', lineX2);
             line.setAttribute('y2', labelCenterY);
             line.setAttribute('opacity', isAnimationPaused ? '0.6' : '0');
+
+            // Effet bleu sur la zone couverte par le soleil
+            const sunWorld = new THREE.Vector3(0, 0, 0);
+            const sunProj  = sunWorld.clone().project(camera);
+            const sunScreenX = (sunProj.x * 0.5 + 0.5) * window.innerWidth;
+            const sunScreenY = (-(sunProj.y * 0.5) + 0.5) * window.innerHeight;
+            const sunEdgeProj = new THREE.Vector3(25, 0, 0).project(camera);
+            const sunEdgeX   = (sunEdgeProj.x * 0.5 + 0.5) * window.innerWidth;
+            const sunRadiusPx = Math.abs(sunEdgeX - sunScreenX);
+
+            const sunOverlay = element.querySelector('.label-sun');
+            const rect = element.getBoundingClientRect();
+            const relX = sunScreenX - rect.left;
+            const relY = sunScreenY - rect.top;
+            sunOverlay.style.clipPath = `circle(${sunRadiusPx}px at ${relX}px ${relY}px)`;
         } else {
             element.style.opacity = '0';
             line.setAttribute('opacity', '0');
