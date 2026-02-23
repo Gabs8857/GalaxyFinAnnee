@@ -392,94 +392,110 @@ canvas {
     }
 }
 
-/* Responsive */
+/* ============================
+   RESPONSIVE — Mobile & Tablette
+   ============================ */
+
+/* Tablette paysage (≤ 1024 px) */
 @media (max-width: 1024px) {
-    .detail-container {
+    .detail-main {
         flex-direction: column;
     }
 
-    .detail-3d {
+    .detail-canvas-container {
+        flex: 0 0 50%;
         min-width: 100%;
-        height: 40%;
+        height: 50%;
     }
 
-    .detail-content {
-        height: 60%;
-        padding: 40px 30px;
+    .detail-sidebar {
+        flex: 0 0 50%;
+        min-width: 100%;
+        height: 50%;
+        padding: 20px 30px 24px;
     }
 
-    .detail-content h2 {
-        font-size: 28px;
+    .detail-sidebar h2 {
+        font-size: 26px;
     }
 }
 
+/* Mobile (≤ 768 px) */
 @media (max-width: 768px) {
     canvas {
         height: 100svh;
     }
 
+    /* Indication des contrôles */
     .controls {
-        bottom: 12px;
-        font-size: 11px;
-        padding: 0 10px;
+        bottom: 14px;
+        font-size: 10px;
+        padding: 0 12px;
+        line-height: 1.5;
     }
 
+    /* Bouton pause */
     .animation-pause-btn {
         top: 14px;
         right: 14px;
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
     }
 
+    /* Info survol planète */
     .planet-info {
-        bottom: 60px;
-        max-width: 90vw;
-        padding: 12px 16px;
+        bottom: 62px;
+        max-width: 88vw;
+        padding: 10px 14px;
+        border-width: 1px;
     }
 
     .planet-info h3 {
-        font-size: 14px;
+        font-size: 13px;
     }
 
     .planet-info p {
         font-size: 11px;
     }
 
+    /* Vue détail — entête */
     .detail-header {
-        top: 12px;
-        left: 12px;
+        top: 10px;
+        left: 10px;
     }
 
     .back-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
     }
 
+    /* Vue détail — mise en page verticale */
     .detail-main {
         flex-direction: column;
     }
 
-    /* Réinitialise flex-basis (qui contrôle la hauteur en mode colonne) */
     .detail-canvas-container {
-        flex: 0 0 45%;
+        flex: 0 0 42%;
         min-width: 100%;
-        height: 45%;
+        height: 42%;
     }
 
     .detail-sidebar {
-        flex: 0 0 55%;
+        flex: 0 0 58%;
         min-width: 100%;
-        height: 55%;
-        padding: 12px 16px 20px;
+        height: 58%;
+        padding: 10px 16px 20px;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .detail-sidebar h2 {
-        font-size: 20px;
-        margin-bottom: 10px;
+        font-size: 18px;
+        margin-bottom: 8px;
         padding-bottom: 8px;
+        letter-spacing: 0.5px;
     }
 
     #detail-description {
@@ -488,7 +504,7 @@ canvas {
     }
 
     .detail-continent-cards {
-        gap: 5px;
+        gap: 4px;
     }
 
     .detail-continent-legend-item {
@@ -503,37 +519,37 @@ canvas {
         font-size: 10px;
     }
 
-    /* Encart skill compact sur mobile */
+    /* Encart skill compact */
     .skill-encart.visible {
-        max-height: 200px;
-        padding: 12px 14px 14px;
-        margin: 10px 0;
+        max-height: 180px;
+        padding: 10px 12px 12px;
+        margin: 8px 0;
     }
 
     .skill-encart-title {
-        font-size: 18px;
-        margin-bottom: 6px;
+        font-size: 16px;
+        margin-bottom: 4px;
     }
 
     .skill-encart-tag {
         font-size: 9px;
-        padding: 2px 8px;
+        padding: 2px 7px;
         margin-bottom: 6px;
     }
 
     .skill-encart-continent {
         font-size: 11px;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
 
     .skill-encart-desc {
         font-size: 11px;
-        line-height: 1.5;
+        line-height: 1.4;
         padding-top: 8px;
     }
 
     .skill-encart-close {
-        top: 10px;
+        top: 8px;
         right: 10px;
         width: 24px;
         height: 24px;
@@ -541,29 +557,34 @@ canvas {
     }
 }
 
+/* Très petit mobile (≤ 480 px) */
 @media (max-width: 480px) {
     .controls {
-        font-size: 10px;
+        font-size: 9px;
     }
 
     .planet-info {
-        bottom: 50px;
-        border-width: 1px;
+        bottom: 54px;
+        padding: 8px 12px;
     }
 
     .detail-canvas-container {
-        flex: 0 0 40%;
-        height: 40%;
+        flex: 0 0 38%;
+        height: 38%;
     }
 
     .detail-sidebar {
-        flex: 0 0 60%;
-        height: 60%;
-        padding: 10px 14px 16px;
+        flex: 0 0 62%;
+        height: 62%;
+        padding: 8px 12px 16px;
     }
 
     .detail-sidebar h2 {
-        font-size: 18px;
+        font-size: 16px;
+    }
+
+    .skill-encart.visible {
+        max-height: 160px;
     }
 }
 .animation-pause-btn {

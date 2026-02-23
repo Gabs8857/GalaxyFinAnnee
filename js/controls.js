@@ -116,21 +116,22 @@ window.addEventListener('wheel', (e) => {
     camera.position.z = Math.max(80, Math.min(600, camera.position.z));
 }, { passive: false });
 
-// === ÉVÉNEMENTS TACTILES ===
+// === CONTRÔLES TACTILES ===
+const TOUCH_MOVE_THRESHOLD = 8; // px — déplacement min pour considérer un drag
+
 const touchState = {
     isDragging: false,
     hasMoved: false,
     lastX: 0,
     lastY: 0,
+    startX: 0,
+    startY: 0,
     isPinching: false,
     lastDistance: 0,
-    hoveredPlanetMesh: null
 };
 
-function getTouchDistance(touchA, touchB) {
-    const dx = touchA.clientX - touchB.clientX;
-    const dy = touchA.clientY - touchB.clientY;
-    return Math.hypot(dx, dy);
+function getTouchDistance(a, b) {
+    return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
 }
 
 window.addEventListener('touchstart', (event) => {
@@ -138,15 +139,17 @@ window.addEventListener('touchstart', (event) => {
     if (detailView && detailView.classList.contains('active')) return;
 
     if (event.touches.length === 1) {
-        const touch = event.touches[0];
+        const t = event.touches[0];
         touchState.isDragging = true;
-        touchState.hasMoved = false;
+        touchState.hasMoved   = false;
         touchState.isPinching = false;
-        touchState.lastX = touch.clientX;
-        touchState.lastY = touch.clientY;
+        touchState.lastX  = t.clientX;
+        touchState.lastY  = t.clientY;
+        touchState.startX = t.clientX;
+        touchState.startY = t.clientY;
     } else if (event.touches.length === 2) {
-        touchState.isPinching = true;
-        touchState.isDragging = false;
+        touchState.isPinching   = true;
+        touchState.isDragging   = false;
         touchState.lastDistance = getTouchDistance(event.touches[0], event.touches[1]);
     }
     event.preventDefault();
@@ -156,33 +159,36 @@ window.addEventListener('touchmove', (event) => {
     const detailView = document.getElementById('detail-view');
     if (detailView && detailView.classList.contains('active')) return;
 
+    /* Pinch-to-zoom (2 doigts) */
     if (touchState.isPinching && event.touches.length === 2) {
-        const distance = getTouchDistance(event.touches[0], event.touches[1]);
-        const delta = distance - touchState.lastDistance;
-        camera.position.z -= delta * 0.2;
-        camera.position.z = Math.max(80, Math.min(600, camera.position.z));
-        touchState.lastDistance = distance;
-        touchState.hasMoved = true;
+        const dist  = getTouchDistance(event.touches[0], event.touches[1]);
+        const delta = dist - touchState.lastDistance;
+        camera.position.z -= delta * 0.25;
+        camera.position.z   = Math.max(80, Math.min(600, camera.position.z));
+        touchState.lastDistance = dist;
         event.preventDefault();
         return;
     }
 
+    /* Rotation (1 doigt) */
     if (touchState.isDragging && event.touches.length === 1) {
-        const touch = event.touches[0];
-        const deltaX = touch.clientX - touchState.lastX;
-        const deltaY = touch.clientY - touchState.lastY;
+        const t      = event.touches[0];
+        const deltaX = t.clientX - touchState.lastX;
+        const deltaY = t.clientY - touchState.lastY;
 
         scene.rotation.y += deltaX * 0.005;
         scene.rotation.x += deltaY * 0.005;
 
-        touchState.lastX = touch.clientX;
-        touchState.lastY = touch.clientY;
-        touchState.hasMoved = true;
+        touchState.lastX = t.clientX;
+        touchState.lastY = t.clientY;
 
-        if (touchState.hoveredPlanetMesh) {
-            touchState.hoveredPlanetMesh = null;
-            updateHoverFromPointer(-9999, -9999);
+        /* Marque le mouvement uniquement au-delà du seuil */
+        if (!touchState.hasMoved) {
+            const dx = t.clientX - touchState.startX;
+            const dy = t.clientY - touchState.startY;
+            if (Math.hypot(dx, dy) > TOUCH_MOVE_THRESHOLD) touchState.hasMoved = true;
         }
+
         event.preventDefault();
     }
 }, { passive: false });
@@ -195,40 +201,33 @@ window.addEventListener('touchend', (event) => {
         return;
     }
 
+    /* Tap sans glissement → interaction */
     if (!touchState.isPinching && !touchState.hasMoved && event.changedTouches.length > 0) {
-        const touch = event.changedTouches[0];
-        const hitObject = getSpaceIntersection(touch.clientX, touch.clientY);
+        const t         = event.changedTouches[0];
+        const hitObject = getSpaceIntersection(t.clientX, t.clientY);
 
         if (hitObject && isObjectInSunHierarchy(hitObject)) {
             suppressNextClick = true;
             openCv();
         } else {
             const planet = getPlanetFromObject(hitObject);
-            if (!planet) {
-                touchState.hoveredPlanetMesh = null;
-                updateHoverFromPointer(-9999, -9999);
-            } else if (touchState.hoveredPlanetMesh === planet) {
+            if (planet) {
                 suppressNextClick = true;
+                updateHoverFromPointer(t.clientX, t.clientY);
                 showDetailView(planet);
-                touchState.hoveredPlanetMesh = null;
-            } else {
-                // Premier tap : hover + ouvre directement la vue détail sur mobile
-                touchState.hoveredPlanetMesh = planet;
-                updateHoverFromPointer(touch.clientX, touch.clientY);
-                suppressNextClick = true;
-                showDetailView(planet);
-                touchState.hoveredPlanetMesh = null;
             }
         }
     }
 
     touchState.isDragging = false;
     touchState.isPinching = false;
+    touchState.hasMoved   = false;
 }, { passive: false });
 
 window.addEventListener('touchcancel', () => {
     touchState.isDragging = false;
     touchState.isPinching = false;
+    touchState.hasMoved   = false;
 });
 
 // === REDIMENSIONNEMENT ===
