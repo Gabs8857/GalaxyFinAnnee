@@ -5,22 +5,14 @@ Un portfolio interactif utilisant Three.js pour créer une visualisation 3D des 
 ## 📁 Structure du projet
 
 ```
-portfolio-cosmique/
-├── index.html              # Page d'accueil - Galaxie interactive
+galaxy-test/
+├── index.html            # Page principale (galaxie interactive)
 ├── css/
-│   └── style.css          # Feuille de styles unifiée
+│   └── style.css         # Styles globaux
 ├── js/
-│   ├── main.js            # Logique principale (scène 3D, interactions)
-│   └── planet-detail.js   # Logique des pages de détail des planètes
-└── pages/                 # Pages de détail individuelles
-    ├── planet-dev-web.html
-    ├── planet-infographie.html
-    ├── planet-audiovisuel.html
-    ├── planet-design-uiux.html
-    ├── planet-programmation.html
-    ├── planet-animation.html
-    ├── planet-modelisation.html
-    └── planet-game-dev.html
+│   └── main.js           # Scène Three.js + interactions + vue détail
+├── CV.pdf                # CV ouvert via interaction
+└── toggle.png            # Favicon
 ```
 
 ## 🎮 Contrôles
@@ -28,6 +20,7 @@ portfolio-cosmique/
 - **Clic gauche + mouvement** : Rotation de la scène
 - **Molette** : Zoom
 - **Clic sur une planète** : Voir les détails
+- **Tactile** : Glisser (rotation), pincer (zoom), tap (détails)
 
 ## 🌍 Planètes
 
@@ -44,10 +37,31 @@ Le portfolio contient 8 domaines d'expertise représentés comme des planètes o
 
 ## 🚀 Utilisation
 
-1. Ouvrir `index.html` dans un navigateur moderne
-2. Explorer la galaxie avec la souris
-3. Cliquer sur une planète pour voir les détails
-4. Cliquer le bouton "←" pour revenir
+### Démarrage local (serveur Python)
+
+Depuis la racine du projet, lancer :
+
+```bash
+python3 -m http.server 8000
+```
+
+Puis ouvrir dans le navigateur :
+
+- `http://127.0.0.1:8000`
+
+Pour arrêter le serveur :
+
+- `Ctrl + C` dans le terminal
+
+> Si `python3` ne fonctionne pas sur ta machine, essaie `python -m http.server 8000`.
+
+### Utilisation
+
+1. Démarrer le serveur local Python
+2. Ouvrir `http://127.0.0.1:8000`
+3. Explorer la galaxie avec la souris
+4. Cliquer sur une planète pour voir les détails
+5. Cliquer le bouton "←" pour revenir
 
 ## 📦 Dépendances
 
@@ -56,5 +70,6 @@ Le portfolio contient 8 domaines d'expertise représentés comme des planètes o
 ## 📝 Notes
 
 - Tous les fichiers CSS sont consolidés dans `css/style.css`
-- La logique JavaScript est séparée en deux modules : `js/main.js` (galaxie) et `js/planet-detail.js` (détails)
-- Les pages de détail utilisent des chemins relatifs (`../`) pour accéder aux ressources
+- Toute la logique JavaScript est centralisée dans `js/main.js`
+- Les détails d'une planète s'affichent dans une vue intégrée (pas de pages HTML séparées)
+- Les orbites sont elliptiques (ovales) avec une vitesse qui varie selon la distance au soleil

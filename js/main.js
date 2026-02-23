@@ -168,7 +168,7 @@ sun.position.set(0, 0, 0);
 scene.add(sun);
 
 function openCv() {
-    window.open('CV.pdf', '_blank', 'noopener');
+    window.open('../CV.pdf', '_blank', 'noopener');
 }
 
 // Ajouter un glow au soleil
@@ -217,6 +217,9 @@ const beltLine2 = createAsteroidBelt(142, 600, 10);
 // Créer les planètes
 planets.forEach((planet, index) => {
     const geometry = new THREE.IcosahedronGeometry(planet.size / 2, 4);
+    const orbitRadiusX = planet.distance;
+    const orbitRadiusZ = planet.distance * (0.72 + (index % 4) * 0.06);
+    const initialAngle = Math.random() * Math.PI * 2;
     
     const material = new THREE.MeshPhongMaterial({
         color: planet.color,
@@ -228,7 +231,11 @@ planets.forEach((planet, index) => {
 
     const mesh = new THREE.Mesh(geometry, material);
     const planetYOffset = Math.sin(index) * 10;
-    mesh.position.set(planet.distance, planetYOffset, 0);
+    mesh.position.set(
+        Math.cos(initialAngle) * orbitRadiusX,
+        planetYOffset,
+        Math.sin(initialAngle) * orbitRadiusZ
+    );
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     
@@ -237,8 +244,9 @@ planets.forEach((planet, index) => {
         planet: planet,
         originalScale: 1,
         isHovered: false,
-        distance: planet.distance,
-        angle: Math.random() * Math.PI * 2,
+        orbitRadiusX: orbitRadiusX,
+        orbitRadiusZ: orbitRadiusZ,
+        angle: initialAngle,
         orbitSpeed: planet.speed,
         orbitYOffset: planetYOffset
     };
@@ -252,9 +260,9 @@ planets.forEach((planet, index) => {
     for (let i = 0; i <= 128; i++) {
         const angle = (i / 128) * Math.PI * 2;
         orbitPoints.push(
-            Math.cos(angle) * planet.distance,
+            Math.cos(angle) * orbitRadiusX,
             planetYOffset,
-            Math.sin(angle) * planet.distance
+            Math.sin(angle) * orbitRadiusZ
         );
     }
     orbitGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(orbitPoints), 3));
@@ -501,10 +509,27 @@ function rotateBelts() {
 
 function updateOrbits() {
     planetsObjects.forEach((mesh) => {
-        mesh.userData.angle += mesh.userData.orbitSpeed;
+        const orbitRadiusX = mesh.userData.orbitRadiusX || mesh.userData.distance;
+        const orbitRadiusZ = mesh.userData.orbitRadiusZ || mesh.userData.distance;
+
+        const distanceReference = (orbitRadiusX + orbitRadiusZ) * 0.5;
+        const currentDistance = Math.max(
+            0.001,
+            Math.hypot(
+                Math.cos(mesh.userData.angle) * orbitRadiusX,
+                Math.sin(mesh.userData.angle) * orbitRadiusZ
+            )
+        );
+        const speedFactor = THREE.MathUtils.clamp(
+            Math.pow(distanceReference / currentDistance, 1.25),
+            0.55,
+            1.9
+        );
+
+        mesh.userData.angle += mesh.userData.orbitSpeed * speedFactor;
         
-        const x = Math.cos(mesh.userData.angle) * mesh.userData.distance;
-        const z = Math.sin(mesh.userData.angle) * mesh.userData.distance;
+        const x = Math.cos(mesh.userData.angle) * orbitRadiusX;
+        const z = Math.sin(mesh.userData.angle) * orbitRadiusZ;
         
         mesh.position.x = x;
         mesh.position.y = mesh.userData.orbitYOffset;
@@ -518,10 +543,12 @@ function updateOrbits() {
 // Bouton de mise en pause de l'animation
 const animationPauseBtn = document.getElementById('animation-pause-btn');
 let isAnimationPaused = false;
-animationPauseBtn.addEventListener('click', () => {
-    isAnimationPaused = !isAnimationPaused;
-    animationPauseBtn.textContent = isAnimationPaused ? '▶️' : '⏸️';
-});
+if (animationPauseBtn) {
+    animationPauseBtn.addEventListener('click', () => {
+        isAnimationPaused = !isAnimationPaused;
+        animationPauseBtn.textContent = isAnimationPaused ? '▶️' : '⏸️';
+    });
+}
 // === VUE DÉTAIL ===
 let detailScene = null;
 let detailCamera = null;
