@@ -1,4 +1,36 @@
 // === VUE DÉTAIL ===
+
+// Tooltip pour les rochers-skill
+const skillTooltip = document.createElement('div');
+skillTooltip.style.cssText = `
+    position: fixed;
+    background: rgba(20, 0, 40, 0.92);
+    color: #ff99ff;
+    border: 1px solid #aa44ff;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-family: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 9999;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+`;
+document.body.appendChild(skillTooltip);
+
+function showSkillTooltip(text, x, y) {
+    skillTooltip.textContent = text;
+    skillTooltip.style.left = `${x + 14}px`;
+    skillTooltip.style.top = `${y - 28}px`;
+    skillTooltip.style.opacity = '1';
+}
+
+function hideSkillTooltip() {
+    skillTooltip.style.opacity = '0';
+}
+
 let detailScene = null;
 let detailCamera = null;
 let detailRenderer = null;
@@ -91,6 +123,15 @@ function showPlanetInfo(planet) {
 function showContinentInfo(continent) {
     document.getElementById('detail-title').textContent = continent.name.toUpperCase();
     document.getElementById('detail-description').textContent = continent.detail;
+    focusOnContinent(continent.name);
+    if (currentDetailPlanet) {
+        renderDetailContinentCards(currentDetailPlanet, continent.name);
+    }
+}
+
+function showSkillInfo(skillName, continent) {
+    document.getElementById('detail-title').textContent = skillName.toUpperCase();
+    document.getElementById('detail-description').textContent = `${continent.name} · ${skillName}`;
     focusOnContinent(continent.name);
     if (currentDetailPlanet) {
         renderDetailContinentCards(currentDetailPlanet, continent.name);
@@ -194,18 +235,28 @@ function getDetailIntersection(clientX, clientY) {
 
 // --- Événements canvas détail (souris) ---
 function onDetailCanvasClick(event) {
+    if (detailDragMoved) { detailDragMoved = false; return; }
     const hit = getDetailIntersection(event.clientX, event.clientY);
-    if (hit && hit.userData && hit.userData.isContinent && hit.userData.continent) {
-        showContinentInfo(hit.userData.continent);
-        return;
+    if (hit && hit.userData) {
+        if (hit.userData.isSkillRock && hit.userData.skillName) {
+            showSkillInfo(hit.userData.skillName, hit.userData.continent);
+            return;
+        }
+        if (hit.userData.isContinent && hit.userData.continent) {
+            showContinentInfo(hit.userData.continent);
+            return;
+        }
     }
     if (hit && currentDetailPlanet) {
         showPlanetInfo(currentDetailPlanet);
     }
 }
 
+let detailDragMoved = false;
+
 function onDetailCanvasMouseDown(event) {
     isDraggingDetail = true;
+    detailDragMoved = false;
     previousDetailMousePosition = { x: event.clientX, y: event.clientY };
     detailRenderer.domElement.style.cursor = 'grabbing';
 }
@@ -221,11 +272,13 @@ function onDetailCanvasInteraction(event) {
         const deltaX = event.clientX - previousDetailMousePosition.x;
         const deltaY = event.clientY - previousDetailMousePosition.y;
         previousDetailMousePosition = { x: event.clientX, y: event.clientY };
+        if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) detailDragMoved = true;
 
         if (detailPlanetGroup) {
             detailPlanetGroup.rotation.y += deltaX * 0.005;
             detailPlanetGroup.rotation.x += deltaY * 0.005;
         }
+        hideSkillTooltip();
         return;
     }
 
@@ -244,15 +297,26 @@ function onDetailCanvasInteraction(event) {
     });
 
     let found = false;
+    hideSkillTooltip();
+
     for (let i = 0; i < intersects.length; i++) {
-        if (intersects[i].object.userData && intersects[i].object.userData.isContinent) {
-            intersects[i].object.material.opacity = 1;
-            intersects[i].object.material.emissiveIntensity = 0.18;
+        const obj = intersects[i].object;
+        if (obj.userData && obj.userData.isSkillRock && obj.userData.skillName) {
+            obj.material.opacity = 1;
+            obj.material.emissiveIntensity = 0.3;
+            detailRenderer.domElement.style.cursor = 'pointer';
+            showSkillTooltip(obj.userData.skillName, event.clientX, event.clientY);
+            found = true;
+            break;
+        }
+        if (obj.userData && obj.userData.isContinent) {
+            obj.material.opacity = 1;
+            obj.material.emissiveIntensity = 0.18;
             detailRenderer.domElement.style.cursor = 'pointer';
             found = true;
             break;
         }
-        if (intersects[i].object.userData && intersects[i].object.userData.isContinent === false) {
+        if (obj.userData && obj.userData.isContinent === false) {
             detailRenderer.domElement.style.cursor = 'pointer';
             found = true;
             break;
@@ -305,8 +369,14 @@ function onDetailCanvasTouchEnd(event) {
     if (!detailTouchState.hasMoved && event.changedTouches.length > 0) {
         const touch = event.changedTouches[0];
         const hit = getDetailIntersection(touch.clientX, touch.clientY);
-        if (hit && hit.userData && hit.userData.isContinent && hit.userData.continent) {
-            showContinentInfo(hit.userData.continent);
+        if (hit && hit.userData) {
+            if (hit.userData.isSkillRock && hit.userData.skillName) {
+                showSkillInfo(hit.userData.skillName, hit.userData.continent);
+            } else if (hit.userData.isContinent && hit.userData.continent) {
+                showContinentInfo(hit.userData.continent);
+            } else if (currentDetailPlanet) {
+                showPlanetInfo(currentDetailPlanet);
+            }
         } else if (hit && currentDetailPlanet) {
             showPlanetInfo(currentDetailPlanet);
         }

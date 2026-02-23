@@ -20,6 +20,7 @@ Le projet met en scene des domaines de competences sous forme de planetes en orb
 - **Legende interactive** des continents avec indicateurs colores
 - **Systeme de focus** sur les continents (orientation automatique par quaternions)
 - **Apercu des continents** visible directement en vue galaxie
+- **Rochers-skill interactifs** : un rocher par skill sur chaque continent, avec tooltip au survol et info au clic
 - **Geometrie procedurale** avec algorithme de Fibonacci et bruit 3D
 - **Interface moderne** avec bouton retour stylise et effets lumineux
 - **Animations fluides** avec transitions et interpolations
@@ -80,6 +81,8 @@ python -m http.server 8000
 ### Vue Detail
 
 - Bouton <- (en haut a gauche) : retour a la vue galaxie
+- Survol d'un rocher : tooltip avec le nom du skill
+- Clic sur un rocher : affichage du skill correspondant
 - Clic sur un continent : focus et orientation de la planete
 - Clic sur la planete : affichage des informations generales
 - Rotation automatique de la planete
@@ -113,6 +116,13 @@ galaxy-test/
 +-js/
 |  +-data.js
 |  +-geometry.js
+|  +-scene.js
+|  +-asteroids.js
+|  +-planets.js
+|  +-animation.js
+|  +-detail.js
+|  +-controls.js
+|  +-labels.js
 |  +-main.js
 +-CV.pdf
 +-toggle.png
@@ -127,13 +137,15 @@ galaxy-test/
   - `getFibonacciSphereDirection()` : distribution uniforme sur sphere
   - `pseudoNoise3()` : bruit procedural 3D pour variations naturelles
   - `buildContinentPatchGeometry()` : generation des patches de continents
-  - `addPolygonReliefMeshes()` : ajout de relief polygonal
-- **js/main.js** : Logique principale de la scene et interactions
-  - Gestion des deux vues (galaxie et detail)
-  - Systeme d'orbites elliptiques avec variation de vitesse
-  - Raycasting pour detection de clics
-  - Animations et transitions (quaternions, lerp)
-  - Systeme d'etiquettes SVG dynamiques
+  - `addPolygonReliefMeshes()` : un rocher par skill (parse depuis `continent.detail`), avec `skillName` dans `userData`
+- **js/scene.js** : Scene Three.js, camera, renderer, lumieres, soleil et glow
+- **js/asteroids.js** : Creation et ajout des deux ceintures d'asteroides
+- **js/planets.js** : Creation des planetes, orbites visuelles et apercu des continents
+- **js/animation.js** : Boucle `animate()`, orbites, rotation du soleil, hover, etat de pause
+- **js/detail.js** : Vue detail complete — renderer 3D, continents, rochers-skill, tooltip, interactions
+- **js/controls.js** : Evenements souris, tactile, zoom, hover galaxie, resize
+- **js/labels.js** : Etiquettes SVG des planetes et bouton pause
+- **js/main.js** : Point d'entree (3 lignes) — lance `animate()`, `updateControlsText()`, `createPlanetLabels()`
 - **css/style.css** : Styles avec variables CSS et animations
   - Theme spatial avec couleurs violettes/roses
   - Effets de glow et transitions fluides
@@ -168,14 +180,17 @@ La generation des continents repose sur deux niveaux complementaires :
    - Un bruit procedural (`pseudoNoise3`) perturbe le seuil pour casser les contours parfaits.
    - Les sommets retenus sont legerement extruded pour donner du relief.
 
-2. **Relief polygonal additionnel**
-   - `addPolygonReliefMeshes(...)` ajoute de petits polyedres autour de la zone du continent.
-   - Ces blocs renforcent l'aspect rocheux/polygonal et la lecture visuelle.
+2. **Rochers-skill**
+   - `addPolygonReliefMeshes(...)` parse `continent.detail` pour extraire la liste de skills.
+   - Cree exactement un rocher (IcosahedronGeometry) par skill, repartis uniformement autour du centre du continent.
+   - Chaque rocher stocke `skillName` et `isSkillRock` dans `userData`.
+   - Au survol : tooltip DOM affiche le nom du skill.
+   - Au clic : `showSkillInfo()` met a jour le titre et la description dans la sidebar.
 
 ### Ou cela s'applique
 
-- **Vue galaxie** : apercu simplifie des continents sur chaque planete
-- **Vue detail** : version plus dense (patch + polygones) avec interaction au clic
+- **Vue galaxie** : apercu simplifie des continents sur chaque planete (rochers sans interaction)
+- **Vue detail** : rochers interactifs avec tooltip et clic
 - **Focus continent** : orientation automatique de la planete via quaternion.slerp()
 
 ### Ceintures d'asteroides

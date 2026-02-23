@@ -70,7 +70,13 @@ function buildContinentPatchGeometry(sourceGeometry, centerDir, angularRadius, p
 }
 
 function addPolygonReliefMeshes(target, centerDir, continent, planetRadius, color, scale = 1, targetList = null) {
-    const count = Math.max(3, Math.round((3 + (Math.random() * 3)) * scale));
+    // Un rocher par skill du continent (parsé depuis continent.detail), max 3
+    const skills = (continent.detail || '')
+        .split(',')
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+    const count = skills.length > 0 ? skills.length : 3;
+
     const up = Math.abs(centerDir.y) > 0.9 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
     const tangentA = new THREE.Vector3().crossVectors(centerDir, up).normalize();
     const tangentB = new THREE.Vector3().crossVectors(centerDir, tangentA).normalize();
@@ -100,6 +106,8 @@ function addPolygonReliefMeshes(target, centerDir, continent, planetRadius, colo
         polyMesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
         polyMesh.userData = {
             isContinent: true,
+            isSkillRock: skills.length > 0,
+            skillName: skills[i] || null,
             continent,
             originalOpacity: 0.98,
             originalEmissiveIntensity: 0.05
