@@ -10,16 +10,20 @@ infoPanel.className = 'planet-info';
 document.body.appendChild(infoPanel);
 
 function getPlanetIntersection(clientX, clientY) {
-    mouse.x = (clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+    const w = renderer.domElement.clientWidth;
+    const h = renderer.domElement.clientHeight;
+    mouse.x = (clientX / w) * 2 - 1;
+    mouse.y = -(clientY / h) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(planetsObjects);
     return intersects.length > 0 ? intersects[0].object : null;
 }
 
 function getSpaceIntersection(clientX, clientY) {
-    mouse.x = (clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+    const w = renderer.domElement.clientWidth;
+    const h = renderer.domElement.clientHeight;
+    mouse.x = (clientX / w) * 2 - 1;
+    mouse.y = -(clientY / h) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects([sun, ...planetsObjects], true);
     return intersects.length > 0 ? intersects[0].object : null;
@@ -133,6 +137,9 @@ function getTouchDistance(a, b) {
 }
 
 window.addEventListener('touchstart', (event) => {
+    // Ne pas interférer avec le bouton pause (preventDefault tuerait son click)
+    if (event.target.closest('#animation-pause-btn')) return;
+
     const detailView = document.getElementById('detail-view');
     if (detailView && detailView.classList.contains('active')) return;
 
@@ -192,6 +199,9 @@ window.addEventListener('touchmove', (event) => {
 }, { passive: false });
 
 window.addEventListener('touchend', (event) => {
+    // Laisser le bouton pause gérer son propre toucher
+    if (event.target.closest('#animation-pause-btn')) return;
+
     const detailView = document.getElementById('detail-view');
     if (detailView && detailView.classList.contains('active')) {
         touchState.isDragging = false;
@@ -229,22 +239,29 @@ window.addEventListener('touchcancel', () => {
 });
 
 // === REDIMENSIONNEMENT ===
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+function onResize() {
+    const w = renderer.domElement.clientWidth  || window.innerWidth;
+    const h = renderer.domElement.clientHeight || window.innerHeight;
+    camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(w, h, false);
     updateControlsText();
 
     const detailCanvas = document.getElementById('detail-canvas');
     if (detailCanvas && detailRenderer && detailCamera) {
-        const width = detailCanvas.clientWidth;
-        const height = detailCanvas.clientHeight;
-        if (width > 0 && height > 0) {
-            detailCamera.aspect = width / height;
+        const dw = detailCanvas.clientWidth;
+        const dh = detailCanvas.clientHeight;
+        if (dw > 0 && dh > 0) {
+            detailCamera.aspect = dw / dh;
             detailCamera.updateProjectionMatrix();
-            detailRenderer.setSize(width, height);
+            detailRenderer.setSize(dw, dh, false);
             detailDefaultCameraZ = calculateAdaptiveZoom();
             detailTargetCameraZ = detailDefaultCameraZ;
         }
     }
+}
+
+window.addEventListener('resize', () => {
+    // Attendre que le viewport se stabilise (changement d'orientation mobile)
+    setTimeout(onResize, 100);
 });

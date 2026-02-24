@@ -251,6 +251,172 @@ const planets = [
               }
             }
         ]
+    },
+    {
+      name:'Hobbys',
+      size: 20,
+      distance: 180,
+      color: 0xff77ee,
+      skills: 'Divers loisirs créatifs et techniques',
+      speed: 0.004,
+      description: 'Une variété de loisirs qui enrichissent ma créativité et mes compétences techniques.',
+      continents: [
+        {
+          name: 'TEST', detail: 'Guitare, Clavier, Batterie, Violon, Chant, Composition, Production, Théorie musicale',
+          skillDetails: {
+            'Guitare':       'Accords, Solos, Styles variés, Pratique régulière',
+            'Clavier':      'Piano, Synthétiseurs, MIDI, Arrangement',
+            'Batterie':     'Rythmes, Coordination, Styles, Pratique régulière',
+            'Violon':       'Techniques de base',
+            'Chant':        'Techniques vocales, Interprétation, Pratique régulière, Chorale',
+            'Composition':   'Mélodies, Harmonies, Arrangement, Bandlab',
+            'Production':    'Mixage, Mastering, Sound Design, Plugins',
+            'Théorie musicale':'Gammes, Accords, Progressions, Analyse'
+          } 
+
+        },
+          { name: 'Musique', detail: 'Guitare, Clavier, Batterie, Violon, Chant, Composition, Production, Théorie musicale',
+            skillDetails: {
+              'Guitare':       'Accords, Solos, Styles variés, Pratique régulière',
+              'Clavier':      'Piano, Synthétiseurs, MIDI, Arrangement',
+              'Batterie':     'Rythmes, Coordination, Styles, Pratique régulière',
+              'Violon':       'Techniques de base',
+              'Chant':        'Techniques vocales, Interprétation, Pratique régulière, Chorale',
+              'Composition':   'Mélodies, Harmonies, Arrangement, Bandlab',
+              'Production':    'Mixage, Mastering, Sound Design, Plugins',
+              'Théorie musicale':'Gammes, Accords, Progressions, Analyse'
+            }
+          },
+          { name: 'Jeux vidéo', detail: 'RPG, Stratégie/ Gestion, Streaming',
+            skillDetails: {
+              'RPG':        'Zelda, Albion Online, Witcher',
+              'Stratégie':  'Civilization VI, Fallout Shelter',
+              'Streaming':  'Diffusion en direct, Interaction avec la communauté'
+            }
+          },
+          { name:'JDR', detail: 'Règles, Histoires, Personnages, Jeu de rôle',
+            skillDetails: {
+              'Règles':        'Pathfinder, Novonia Jazz, Règles de base',
+              'Histoires':     'Narration, Création de monde, Quêtes',
+              'Personnages':   'Création de personnages, Compétences, Classes',
+              'Jeu de rôle':   'Interprétation, Imagination, Communication'
+            }
+          },
+          { name:'Cuisine', detail: 'Recettes, Techniques, Pâtisserie',
+            skillDetails: {
+              'Recettes':      'Cuisine française, Italienne, Asiatique',
+              'Techniques':     'Sauté, Rôtir, Griller, Cuisson lente',
+              'Pâtisserie':     'Gâteaux, Tartes, Viennoiseries, Décoration'
+            }
+          },
+          { name:'Bricolage', detail: 'Menuiserie, Électronique, DIY',
+            skillDetails: {
+              'Menuiserie':    'Travail du bois, Meubles, Décoration',
+              'Électronique':  'Arduino, Raspberry Pi, Prototypage',
+              'DIY':           'Projets créatifs, Réparations, Upcycling'
+            }
+          },
+          { name:'Photographie', detail: 'Techniques, Post-traitement, Styles',
+            skillDetails: {
+              'Techniques':        'Composition, Exposition, Éclairage',
+              'Post-traitement':   'Lightroom, Photoshop, Retouche',
+              'Styles':            'Portrait, Paysage, Urbain, Macro'
+            }
+          },
+          { name:'Langues', detail: 'Anglais, Espagnol, Japonais',
+            skillDetails: {
+              'Anglais':  'Niveau avancé, Communication fluide, Compréhension écrite et orale',
+              'Allemand': 'Niveau intermédiaire, Communication basique, Compréhension écrite',
+              'Japonais': 'Niveau débutant, Connaissance de base des hiragana et katakana'
+            }
+          },
+          { name:'Sports', detail: 'Football, Natation, Randonnée',
+            skillDetails: {
+              'Football': 'Jeu en équipe, Stratégie, Endurance',
+              'Natation': 'Techniques de nage, Endurance, Sécurité aquatique',
+              'Randonnée': 'Orientation, Préparation, Respect de la nature'
+            }
+          },
+          { name:'Lecture', detail: 'Fiction, Non-fiction, Science, Histoire',
+            skillDetails: {
+              'Fiction':     'Romans, Science-fiction, Fantasy, Littérature classique',
+              'Non-fiction': 'Développement personnel, Sciences, Histoire',
+              'Science':     'Physique, Astronomie, Biologie, Informatique',
+              'Histoire':    'Histoire mondiale, Histoire de l\'art, Histoire des sciences'
+            }
+          },
+          { name:'Voyages', detail: 'Découverte de cultures, Aventure, Photographie de voyage',
+            skillDetails: {
+              'Découverte de cultures': 'Immersion, Apprentissage, Respect',
+              'Aventure':              'Randonnée, Exploration, Activités en plein air',
+              'Photographie de voyage': 'Capturer des moments, Paysages, Portraits'
+            }
+          },
+          { name:'Jardinage', detail: 'Plantes, Aménagement, Permaculture',
+            skillDetails: {
+              'Plantes':       'Entretien, Propagation, Plantes d\'intérieur et d\'extérieur',
+              'Aménagement':    'Design de jardin, Espaces verts, Mobilier de jardin',
+              'Permaculture':   'Principes de permaculture, Compostage, Cultures associées'
+            }
+          },
+          { name:'Astronomie', detail: 'Observation, Cosmologie, Astrophotographie',
+            skillDetails: {
+              'Observation':       'Télescope, Constellations, Planètes, Événements célestes',
+              'Cosmologie':        'Origine de l\'univers, Théories, Découvertes récentes',
+              'Astrophotographie': 'Techniques de prise de vue, Post-traitement, Équipement'
+            }
+          },
+          { name:'DIY Tech', detail: 'Projets électroniques, Impression 3D, Raspberry Pi',
+            skillDetails: {
+              'Projets électroniques': 'Circuits, Capteurs, Microcontrôleurs',
+              'Impression 3D':          'Modélisation, Slicing, Matériaux, Maintenance',
+              'Raspberry Pi':           'Projets DIY, Serveurs personnels, Apprentissage de Linux'
+            }
+          },
+          { name:'Arts créatifs', detail: 'Peinture, Dessin, Sculpture',
+            skillDetails: {
+              'Peinture': 'Acrylique, Aquarelle, Techniques mixtes, Théorie des couleurs',
+              'Dessin':   'Perspective, Anatomie, Encre, Illustration digitale',
+              'Sculpture': 'Argile, Bois, Métal, Techniques de moulage'
+            }
+          },
+          { name:'Écriture', detail: 'Fiction, Non-fiction, Blogging',
+            skillDetails: {
+              'Fiction':     'Romans, Nouvelles, Scénarios, Techniques narratives',
+              'Non-fiction': 'Essais, Articles, Blogging, Rédaction technique',
+              'Blogging':    'Création de contenu, SEO, Engagement, Plateformes'
+            }
+          },
+          { name:'Technologie', detail: 'Gadgets, IA, Réalité virtuelle',
+            skillDetails: {
+              'Gadgets':          'Dernières technologies, Tests, Recommandations',
+              'Réalité virtuelle':'Expériences VR, Développement, Tendances'
+            }
+          },
+          { name:'Bénévolat', detail: 'Communauté, Environnement, Aide humanitaire',
+            skillDetails: {
+              'Communauté':       'Organisation d\'événements, Soutien local, Engagement',
+              'Environnement':    'Nettoyage, Sensibilisation, Projets écologiques',
+              'Aide humanitaire': 'Collecte de fonds, Volontariat, Partenariats'
+            }
+          },
+          { name:'Autres', detail: 'Divers loisirs et intérêts',
+            skillDetails: {
+              'Divers loisirs et intérêts': 'Exploration de nouveaux hobbies, Curiosité, Apprentissage continu'
+            }
+          },
+          { name:'À découvrir', detail: 'De nombreux autres centres d\'intérêt à explorer',
+            skillDetails: {
+              'De nombreux autres centres d\'intérêt à explorer': 'Toujours ouvert à de nouvelles expériences et passions'
+            }
+          },
+          {
+            name:'À venir', detail: 'De futurs projets et passions en développement',
+            skillDetails: {
+              'De futurs projets et passions en développement': 'Restez à l\'écoute pour de nouvelles aventures passionnantes'
+            }
+          }
+        ]
     }
 ];
 

@@ -36,7 +36,7 @@ canvas {
 }
 
 .controls {
-    position: absolute;
+    position: fixed;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
@@ -48,7 +48,7 @@ canvas {
 }
 
 .planet-info {
-    position: absolute;
+    position: fixed;
     bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
@@ -588,11 +588,12 @@ canvas {
     }
 }
 .animation-pause-btn {
-    position: absolute;
+    position: fixed;
     top: 30px;
     right: 30px;
     width: 50px;
     height: 50px;
+    touch-action: manipulation;
     background: linear-gradient(135deg, var(--color-purple-700) 0%, #1a0033 100%);
     border: 2px solid var(--color-pink-300);
     color: var(--color-pink-300);

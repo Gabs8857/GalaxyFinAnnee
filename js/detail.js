@@ -379,7 +379,7 @@ function onDetailCanvasInteraction(event) {
         const obj = intersects[i].object;
         if (obj.userData && obj.userData.isSkillRock && obj.userData.skillName) {
             obj.material.opacity = 1;
-            obj.material.emissiveIntensity = 0.3;
+            obj.material.emissiveIntensity = 0.75;
             detailRenderer.domElement.style.cursor = 'pointer';
             showSkillTooltip(obj.userData.skillName, event.clientX, event.clientY);
             found = true;

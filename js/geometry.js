@@ -93,10 +93,10 @@ function addPolygonReliefMeshes(target, centerDir, continent, planetRadius, colo
         const polyGeometry = new THREE.IcosahedronGeometry(polyRadius, 0);
         const polyMaterial = new THREE.MeshStandardMaterial({
             color,
-            emissive: 0x15110a,
-            emissiveIntensity: 0.05,
-            roughness: 0.95,
-            metalness: 0.02,
+            emissive: color,
+            emissiveIntensity: 0.38,
+            roughness: 0.68,
+            metalness: 0.08,
             transparent: true,
             opacity: 0.98
         });
@@ -110,7 +110,7 @@ function addPolygonReliefMeshes(target, centerDir, continent, planetRadius, colo
             skillName: skills[i] || null,
             continent,
             originalOpacity: 0.98,
-            originalEmissiveIntensity: 0.05
+            originalEmissiveIntensity: 0.38
         };
 
         target.add(polyMesh);

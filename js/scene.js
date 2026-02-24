@@ -10,6 +10,17 @@ document.body.appendChild(renderer.domElement);
 
 camera.position.z = 200;
 
+// Correction portrait mobile : le viewport peut être incorrect au chargement initial
+requestAnimationFrame(() => {
+    const w = renderer.domElement.clientWidth  || window.innerWidth;
+    const h = renderer.domElement.clientHeight || window.innerHeight;
+    if (w !== window.innerWidth || h !== window.innerHeight) {
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h, false);
+    }
+});
+
 // === TEXTE DE CONTRÔLES ===
 const controlsText = document.querySelector('.controls p');
 

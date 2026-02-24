@@ -115,11 +115,23 @@ function updatePlanetLabels() {
 
 // === BOUTON PAUSE ===
 const animationPauseBtn = document.getElementById('animation-pause-btn');
+
+function togglePause() {
+    isAnimationPaused = !isAnimationPaused;
+    animationPauseBtn.innerHTML = isAnimationPaused ? '&#9654;' : '&#9208;';
+    if (isAnimationPaused) updatePlanetLabels();
+}
+
 if (animationPauseBtn) {
+    // Click (desktop)
     animationPauseBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        isAnimationPaused = !isAnimationPaused;
-        animationPauseBtn.innerHTML = isAnimationPaused ? '&#9654;' : '&#9208;';
-        if (isAnimationPaused) updatePlanetLabels();
+        togglePause();
     });
+    // Touchend (mobile) — réponse immédiate sans attendre le click synthétique
+    animationPauseBtn.addEventListener('touchend', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        togglePause();
+    }, { passive: false });
 }
