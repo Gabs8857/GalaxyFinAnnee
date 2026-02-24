@@ -83,7 +83,6 @@ function createPlanets() {
 
         mesh.userData = {
             planet: planet,
-            originalScale: 1,
             isHovered: false,
             orbitRadiusX: orbitRadiusX,
             orbitRadiusZ: orbitRadiusZ,
@@ -95,8 +94,8 @@ function createPlanets() {
         scene.add(mesh);
         planetsObjects.push(mesh);
         addGalaxyContinentPreview(mesh, planet);
-
-        // Orbites visuelles
+        
+ // Orbites visuelles
         const orbitGeometry = new THREE.BufferGeometry();
         const orbitPoints = [];
         for (let i = 0; i <= 128; i++) {

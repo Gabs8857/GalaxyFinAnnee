@@ -31,7 +31,7 @@ const planets = [
                 'Git':        'Branching, Rebase, CI/CD, GitHub Actions',
                 'Testing':    'Jest, Vitest, Cypress, TDD, Coverage',
                 'Docker':     'Images, Containers, Compose, Volumes, Networking',
-                'VM':         'Linux, SSH, Nginx, PM2, Déploiement VPS'
+                'VM':         'Linux, SSH, Nginx'
               }
             }
         ]
@@ -248,47 +248,6 @@ const planets = [
                 'Eevee':         'Real-time, Bloom, SSR, SSAO, Shadow Maps',
                 'Render Passes': 'Diffuse, Specular, Shadow, Compositing',
                 'Quality':       'AA, Resolution, Tile Size, Output Formats'
-              }
-            }
-        ]
-    },
-    {
-        name: 'Game Dev',
-        size: 16,
-        distance: 165,
-        color: 0xff77cc,
-        skills: 'Unity, Unreal, C#',
-        speed: 0.002,
-        description: 'Développement de jeux vidéo complets avec Unity et Unreal Engine.',
-        continents: [
-            { name: 'Unity', detail: 'C#, Physics Engine, Game Logic, Scripting',
-              skillDetails: {
-                'C#':            'POO, LINQ, Async/Await, Attributes, Events',
-                'Physics Engine':'Rigidbody, Colliders, Triggers, Raycasting',
-                'Game Logic':    'FSM, Patterns (Observer, Command), ScriptableObjects',
-                'Scripting':     'MonoBehaviour, Coroutines, Editor Scripts'
-              }
-            },
-            { name: 'Godot', detail: 'GDScript, 2D/3D, Node System, Open Source',
-              skillDetails: {
-                'GDScript':    'Typage, Signals, Resources, Coroutines',
-                '2D/3D':       'TileMap, AnimationPlayer, CharacterBody, CSG',
-                'Node System': 'Scènes, Instancing, Autoload, Groups',
-                'Open Source': 'GDExtension, Contributions, Custom Builds'
-              }
-            },
-            { name: 'Unreal', detail: 'Blueprints, Optimization, Simulation',
-              skillDetails: {
-                'Blueprints':   'Event Graph, Functions, Macros, Data Tables',
-                'Optimization': 'LOD, Culling, Profiler, Draw Calls, Nanite',
-                'Simulation':   'Chaos Physics, Niagara Particles, Cloth'
-              }
-            },
-            { name: 'Gameplay', detail: 'Mechanics Design, UI Systems, Audio Integration',
-              skillDetails: {
-                'Mechanics Design':   'Prototypage rapide, Game Feel, Balancing',
-                'UI Systems':         'Canvas/Widget, HUD, Menus, Localisation',
-                'Audio Integration':  'FMOD, Spatial Audio, Triggers, Mixers'
               }
             }
         ]

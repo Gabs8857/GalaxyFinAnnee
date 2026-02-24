@@ -66,10 +66,6 @@ function updateHoverFromPointer(clientX, clientY) {
 }
 
 // === ÉVÉNEMENTS SOURIS ===
-window.addEventListener('mousemove', (event) => {
-    updateHoverFromPointer(event.clientX, event.clientY);
-});
-
 window.addEventListener('click', (event) => {
     if (suppressNextClick) {
         suppressNextClick = false;
@@ -91,7 +87,7 @@ window.addEventListener('click', (event) => {
     }
 });
 
-// === DRAG SOURIS ===
+// === DRAG & HOVER SOURIS ===
 let isDragging = false;
 let previousMousePosition = { x: 0, y: 0 };
 
@@ -103,6 +99,8 @@ window.addEventListener('mousemove', (e) => {
         const deltaY = e.clientY - previousMousePosition.y;
         scene.rotation.y += deltaX * 0.005;
         scene.rotation.x += deltaY * 0.005;
+    } else {
+        updateHoverFromPointer(e.clientX, e.clientY);
     }
     previousMousePosition = { x: e.clientX, y: e.clientY };
 });

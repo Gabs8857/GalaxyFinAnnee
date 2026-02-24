@@ -113,10 +113,6 @@ function updatePlanetLabels() {
     });
 }
 
-function togglePlanetLabels(show) {
-    if (show) updatePlanetLabels();
-}
-
 // === BOUTON PAUSE ===
 const animationPauseBtn = document.getElementById('animation-pause-btn');
 if (animationPauseBtn) {
@@ -124,6 +120,6 @@ if (animationPauseBtn) {
         e.stopPropagation();
         isAnimationPaused = !isAnimationPaused;
         animationPauseBtn.innerHTML = isAnimationPaused ? '&#9654;' : '&#9208;';
-        togglePlanetLabels(isAnimationPaused);
+        if (isAnimationPaused) updatePlanetLabels();
     });
 }

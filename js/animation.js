@@ -34,8 +34,8 @@ function updateBelts() {
 
 function updateOrbits() {
     planetsObjects.forEach((mesh) => {
-        const orbitRadiusX = mesh.userData.orbitRadiusX || mesh.userData.distance;
-        const orbitRadiusZ = mesh.userData.orbitRadiusZ || mesh.userData.distance;
+        const orbitRadiusX = mesh.userData.orbitRadiusX;
+        const orbitRadiusZ = mesh.userData.orbitRadiusZ;
 
         const distanceReference = (orbitRadiusX + orbitRadiusZ) * 0.5;
         const currentDistance = Math.max(

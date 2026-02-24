@@ -60,7 +60,7 @@ Ouvrir dans le navigateur : `http://127.0.0.1:8000`
 
 **Mobile / Tactile :**
 - Glisser : rotation | Pincer : zoom
-- Tap planete : hover | Double tap : vue detail
+- Tap planete : vue detail
 - Tap soleil : ouverture du CV
 
 ### Vue Detail
@@ -83,7 +83,6 @@ Ouvrir dans le navigateur : `http://127.0.0.1:8000`
 | 5 | Audiovisuel | #9933ff | 120 | 10 | Montage, Motion, VFX |
 | 6 | Modelisation | #bb44ff | 130 | 13 | Sculpting, Baking, Rendering |
 | 7 | Design UI/UX | #dd66ff | 155 | 14 | Interface, Experience, Accessibilite |
-| 8 | Game Dev | #ff77cc | 165 | 16 | Unity, Godot, Unreal, Gameplay |
 
 ## Stack technique
 
@@ -107,7 +106,6 @@ galaxytest/
     ├── controls.js   # souris, tactile, zoom, resize
     ├── labels.js     # etiquettes SVG, masque solaire (clip-path)
     └── main.js       # point d'entree
-+-toggle.png
 ```
 
 ## Points techniques cles
