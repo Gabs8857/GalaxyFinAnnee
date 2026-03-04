@@ -290,131 +290,49 @@ const planets = [
           { name: 'Jeux vidéo', detail: 'RPG, Stratégie/ Gestion, Streaming',
             skillDetails: {
               'RPG':        'Zelda, Albion Online, Witcher',
-              'Stratégie':  'Civilization VI, Fallout Shelter',
+              'Gestion':  'Civilization VI, Fallout Shelter',
               'Streaming':  'Diffusion en direct, Interaction avec la communauté'
             }
           },
-          { name:'JDR', detail: 'Règles, Histoires, Personnages, Jeu de rôle',
+          { name:'JDR (Jeu de rôle)', detail: 'Règles, Histoires, Personnages, Jeu de rôle',
             skillDetails: {
               'Règles':        'Pathfinder, Novonia Jazz, Règles de base',
               'Histoires':     'Narration, Création de monde, Quêtes',
               'Personnages':   'Création de personnages, Compétences, Classes',
               'Jeu de rôle':   'Interprétation, Imagination, Communication'
             }
-          },
-          { name:'Cuisine', detail: 'Recettes, Techniques, Pâtisserie',
+          }, 
+           {
+             name:'Bricolage', detail:'HomeLab, Bidouillage, Esp32, Nas, Freebox, AutoHébergement, Linux',
+             skillDetails:{
+                'HomeLab':      'Serveurs, Réseau, Virtualisation, Hébergement de données, Test en tout genre',
+                'Bidouillage':   'Projets DIY, Électronique, Arduino',
+                'Esp32':        'Microcontrôleur, IoT, Projets connectés',
+                'Nas':          'Stockage en réseau, Sauvegardes, Plex',
+                'Freebox':      'Personnalisation, Services, Réseau domestique',
+                'AutoHébergement':'Serveurs personnels, Sécurité, Accès à distance',
+                'Linux':        'Administration système, Shell scripting, Fedora, Ubuntu, Arch Linux, Debian (Serveur et Desktop),SteamOS, Kali Linux'
+             }
+           },
+           {
+            name:'Lotr', detail:'Univers étendu, Lore, Personnages, Adaptations',
             skillDetails: {
-              'Recettes':      'Cuisine française, Italienne, Asiatique',
-              'Techniques':     'Sauté, Rôtir, Griller, Cuisson lente',
-              'Pâtisserie':     'Gâteaux, Tartes, Viennoiseries, Décoration'
+              'Univers étendu': 'Livres, Films, Jeux vidéo, Fanfiction',
+              'Lore':          'Histoire de la Terre du Milieu, Races, Mythologie, Chronologie',
+              'Personnages':    'Frodon, Gandalf, Aragorn, Sauron, Gollum',
+              'Adaptations':    'Films de Peter Jackson, Séries Amazon, Jeux vidéo'
             }
-          },
-          { name:'Bricolage', detail: 'Menuiserie, Électronique, DIY',
-            skillDetails: {
-              'Menuiserie':    'Travail du bois, Meubles, Décoration',
-              'Électronique':  'Arduino, Raspberry Pi, Prototypage',
-              'DIY':           'Projets créatifs, Réparations, Upcycling'
-            }
-          },
-          { name:'Photographie', detail: 'Techniques, Post-traitement, Styles',
-            skillDetails: {
-              'Techniques':        'Composition, Exposition, Éclairage',
-              'Post-traitement':   'Lightroom, Photoshop, Retouche',
-              'Styles':            'Portrait, Paysage, Urbain, Macro'
-            }
-          },
-          { name:'Langues', detail: 'Anglais, Espagnol, Japonais',
-            skillDetails: {
-              'Anglais':  'Niveau avancé, Communication fluide, Compréhension écrite et orale',
-              'Allemand': 'Niveau intermédiaire, Communication basique, Compréhension écrite',
-              'Japonais': 'Niveau débutant, Connaissance de base des hiragana et katakana'
-            }
-          },
-          { name:'Sports', detail: 'Football, Natation, Randonnée',
-            skillDetails: {
-              'Football': 'Jeu en équipe, Stratégie, Endurance',
-              'Natation': 'Techniques de nage, Endurance, Sécurité aquatique',
-              'Randonnée': 'Orientation, Préparation, Respect de la nature'
-            }
-          },
-          { name:'Lecture', detail: 'Fiction, Non-fiction, Science, Histoire',
-            skillDetails: {
-              'Fiction':     'Romans, Science-fiction, Fantasy, Littérature classique',
-              'Non-fiction': 'Développement personnel, Sciences, Histoire',
-              'Science':     'Physique, Astronomie, Biologie, Informatique',
-              'Histoire':    'Histoire mondiale, Histoire de l\'art, Histoire des sciences'
-            }
-          },
-          { name:'Voyages', detail: 'Découverte de cultures, Aventure, Photographie de voyage',
-            skillDetails: {
-              'Découverte de cultures': 'Immersion, Apprentissage, Respect',
-              'Aventure':              'Randonnée, Exploration, Activités en plein air',
-              'Photographie de voyage': 'Capturer des moments, Paysages, Portraits'
-            }
-          },
-          { name:'Jardinage', detail: 'Plantes, Aménagement, Permaculture',
-            skillDetails: {
-              'Plantes':       'Entretien, Propagation, Plantes d\'intérieur et d\'extérieur',
-              'Aménagement':    'Design de jardin, Espaces verts, Mobilier de jardin',
-              'Permaculture':   'Principes de permaculture, Compostage, Cultures associées'
-            }
-          },
-          { name:'Astronomie', detail: 'Observation, Cosmologie, Astrophotographie',
-            skillDetails: {
-              'Observation':       'Télescope, Constellations, Planètes, Événements célestes',
-              'Cosmologie':        'Origine de l\'univers, Théories, Découvertes récentes',
-              'Astrophotographie': 'Techniques de prise de vue, Post-traitement, Équipement'
-            }
-          },
-          { name:'DIY Tech', detail: 'Projets électroniques, Impression 3D, Raspberry Pi',
-            skillDetails: {
-              'Projets électroniques': 'Circuits, Capteurs, Microcontrôleurs',
-              'Impression 3D':          'Modélisation, Slicing, Matériaux, Maintenance',
-              'Raspberry Pi':           'Projets DIY, Serveurs personnels, Apprentissage de Linux'
-            }
-          },
-          { name:'Arts créatifs', detail: 'Peinture, Dessin, Sculpture',
-            skillDetails: {
-              'Peinture': 'Acrylique, Aquarelle, Techniques mixtes, Théorie des couleurs',
-              'Dessin':   'Perspective, Anatomie, Encre, Illustration digitale',
-              'Sculpture': 'Argile, Bois, Métal, Techniques de moulage'
-            }
-          },
-          { name:'Écriture', detail: 'Fiction, Non-fiction, Blogging',
-            skillDetails: {
-              'Fiction':     'Romans, Nouvelles, Scénarios, Techniques narratives',
-              'Non-fiction': 'Essais, Articles, Blogging, Rédaction technique',
-              'Blogging':    'Création de contenu, SEO, Engagement, Plateformes'
-            }
-          },
-          { name:'Technologie', detail: 'Gadgets, IA, Réalité virtuelle',
-            skillDetails: {
-              'Gadgets':          'Dernières technologies, Tests, Recommandations',
-              'Réalité virtuelle':'Expériences VR, Développement, Tendances'
-            }
-          },
-          { name:'Bénévolat', detail: 'Communauté, Environnement, Aide humanitaire',
-            skillDetails: {
-              'Communauté':       'Organisation d\'événements, Soutien local, Engagement',
-              'Environnement':    'Nettoyage, Sensibilisation, Projets écologiques',
-              'Aide humanitaire': 'Collecte de fonds, Volontariat, Partenariats'
-            }
-          },
-          { name:'Autres', detail: 'Divers loisirs et intérêts',
-            skillDetails: {
-              'Divers loisirs et intérêts': 'Exploration de nouveaux hobbies, Curiosité, Apprentissage continu'
-            }
-          },
-          { name:'À découvrir', detail: 'De nombreux autres centres d\'intérêt à explorer',
-            skillDetails: {
-              'De nombreux autres centres d\'intérêt à explorer': 'Toujours ouvert à de nouvelles expériences et passions'
-            }
-          },
+           },
           {
-            name:'À venir', detail: 'De futurs projets et passions en développement',
+            name:'Autres', detail:
+           'Photographie, Cuisine, Voyages, Langues, Lecture',
             skillDetails: {
-              'De futurs projets et passions en développement': 'Restez à l\'écoute pour de nouvelles aventures passionnantes'
+              'Photographie': 'Composition, Éclairage, Post-traitement, Photo en nature',
+              'Cuisine':      'Recettes variées, Pâtisserie',
+              'Langues':      'Anglais (intermédiaire), Allemand (courrant), Japonais (débutant)',
+              'Lecture':      'Fiction, Non-fiction, Développement personnel, Science-fiction'
             }
+          
           }
         ]
     }
