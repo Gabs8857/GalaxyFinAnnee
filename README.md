@@ -1,7 +1,7 @@
-# Portfolio Cosmique
+# Gabriel's Universe — Portfolio Cosmique
 
 Portfolio interactif en 3D construit avec Three.js.
-Le projet met en scene des domaines de competences sous forme de planetes en orbite autour d'un soleil central.
+Une page d'accueil spatiale (`index.html`) introduit l'univers, puis redirige vers la scene galaxie (`pages/galaxy.html`) ou les domaines de competences sont representes sous forme de planetes en orbite autour d'un soleil central.
 
 ## Apercu
 
@@ -47,6 +47,9 @@ python3 -m http.server 8000
 
 Ouvrir dans le navigateur : `http://127.0.0.1:8000`
 
+- `http://127.0.0.1:8000` → page d'accueil (`index.html`)
+- `http://127.0.0.1:8000/pages/galaxy.html` → scene galaxie directement
+
 ## Controles
 
 ### Vue Galaxie
@@ -88,16 +91,19 @@ Ouvrir dans le navigateur : `http://127.0.0.1:8000`
 ## Stack technique
 
 - Three.js (CDN r128) / HTML5 / CSS3 / JavaScript vanilla
+- Page d'accueil 100 % CSS (aucune dependance externe)
 
 ## Structure du projet
 
 ```
 galaxytest/
-├── index.html
+├── index.html          # page d'accueil spatiale (landing page)
+├── pages/
+│   └── galaxy.html     # scene Three.js principale
 ├── css/
 │   └── style.css
 └── js/
-    ├── data.js       # donnees planetes, continents, skillDetails et continentColors
+    ├── data.js          # donnees planetes, continents, skillDetails et continentColors
     ├── geometry.js   # geometrie procedurale (Fibonacci, bruit 3D, rochers-skill)
     ├── scene.js      # scene Three.js, camera, lumieres, soleil, correctif viewport initial
     ├── asteroids.js  # ceintures d'asteroides + BELT_ZONES
