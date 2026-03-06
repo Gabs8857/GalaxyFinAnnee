@@ -261,20 +261,6 @@ const planets = [
       speed: 0.004,
       description: 'Une variété de loisirs qui enrichissent ma créativité et mes compétences techniques.',
       continents: [
-        {
-          name: 'TEST', detail: 'Guitare, Clavier, Batterie, Violon, Chant, Composition, Production, Théorie musicale',
-          skillDetails: {
-            'Guitare':       'Accords, Solos, Styles variés, Pratique régulière',
-            'Clavier':      'Piano, Synthétiseurs, MIDI, Arrangement',
-            'Batterie':     'Rythmes, Coordination, Styles, Pratique régulière',
-            'Violon':       'Techniques de base',
-            'Chant':        'Techniques vocales, Interprétation, Pratique régulière, Chorale',
-            'Composition':   'Mélodies, Harmonies, Arrangement, Bandlab',
-            'Production':    'Mixage, Mastering, Sound Design, Plugins',
-            'Théorie musicale':'Gammes, Accords, Progressions, Analyse'
-          } 
-
-        },
           { name: 'Musique', detail: 'Guitare, Clavier, Batterie, Violon, Chant, Composition, Production, Théorie musicale',
             skillDetails: {
               'Guitare':       'Accords, Solos, Styles variés, Pratique régulière',

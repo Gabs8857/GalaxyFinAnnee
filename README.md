@@ -87,6 +87,7 @@ Ouvrir dans le navigateur : `http://127.0.0.1:8000`
 | 5 | Audiovisuel | #9933ff | 120 | 10 | Montage, Motion, VFX |
 | 6 | Modelisation | #bb44ff | 130 | 13 | Sculpting, Baking, Rendering |
 | 7 | Design UI/UX | #dd66ff | 155 | 14 | Interface, Experience, Accessibilite |
+| 8 | Hobbys |  #0xff77ee | 180 | 20 |  Musique, Jeux vidéo, JDR, Bricolage, Lotr, Autres
 
 ## Stack technique
 
